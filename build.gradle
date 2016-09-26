@@ -1,0 +1,149 @@
+import java.nio.charset.Charset.ExtendedProviderHolder;
+import java.sql.Wrapper
+import groovy.sql.Sql
+buildscript {
+    repositories {
+        mavenLocal()
+        mavenCentral()
+        jcenter()
+    }
+    dependencies {
+        classpath "me.gking2224:BuildToolsGradlePlugin:0.1.8-SNAPSHOT"
+    }
+}
+plugins {
+  id 'net.saliman.cobertura' version '2.3.2'
+}
+
+
+apply plugin: 'me.gking2224.buildtools'
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+ext {
+      springVersion = "4.3.1.RELEASE"
+      springDataVersion = "1.10.2.RELEASE"
+      springBootVersion = "1.4.1.RELEASE"
+      jacksonVersion = "2.8.0"
+      freemarkerVersion = "2.3.23"
+      slf4jVersion = "1.7.21"
+      hibernateVersion = "5.2.1.Final"
+}
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+    maven { url "https://repository.jboss.org/nexus/content/repositories/releases" }
+}
+
+task sourcesJar(type: Jar, dependsOn: classes) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+artifacts {
+    archives sourcesJar
+}
+
+
+//integrationTest.outputs.upToDateWhen { false }
+
+dependencies {
+    compile("org.springframework.boot:spring-boot:$springBootVersion")
+    compile("org.springframework:spring-core:$springVersion")
+    compile("org.springframework:spring-web:$springVersion")
+    compile("org.springframework:spring-webmvc:$springVersion")
+    compile("org.springframework.data:spring-data-jpa:$springDataVersion")
+    compile("org.springframework:spring-jdbc:$springVersion")
+    compile("org.springframework:spring-context-support:$springVersion")
+    compile("com.fasterxml.jackson.core:jackson-databind:$jacksonVersion")
+    compile("com.fasterxml.jackson.dataformat:jackson-dataformat-xml:$jacksonVersion")
+
+    compile "javax.servlet:javax.servlet-api:3.1.0"
+    compile "org.slf4j:slf4j-api:$slf4jVersion"
+    runtime "org.slf4j:slf4j-log4j12:$slf4jVersion"
+//    runtime('mysql:mysql-connector-java:5.1.39')
+//    compile group: 'org.apache.commons', name: 'commons-dbcp2', version: '2.1.1'
+
+    compile group: 'junit', name: 'junit', version: '4.12'
+    testCompile "pl.pragmatists:JUnitParams:1.0.5"
+    testCompile "org.jmock:jmock-junit4:2.8.2"
+    compile "org.springframework:spring-test:$springVersion"
+    compile "org.springframework:spring-orm:$springVersion"
+    compile "org.hibernate:hibernate-core:$hibernateVersion"
+    compile group: 'com.jayway.jsonpath', name: 'json-path', version: '2.2.0'
+//    compile localGroovy()
+//    runtime group: 'javax.servlet', name: 'jstl', version: '1.2'
+//    runtime group: 'dom4j', name: 'dom4j', version: '1.6.1'
+}
+
+//cobertura {
+//    coverageDirs << file("build/integration-classes")
+//}
+/*
+applicationDefaultJvmArgs = [
+    "-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=5005"
+]
+*/
+//gretty {
+//    // supported values:
+//    // 'jetty7', 'jetty8', 'jetty9', 'tomcat7', 'tomcat8'
+//    servletContainer = 'tomcat8'
+//    integrationTestTask = 'xxintegrationTest' // name of existing gradle task
+////    extraResourceBase 'dist'
+//}
+
+configurations {
+  published
+}
+
+//war {
+//    from envProps.webapp.ng.buildDir
+//    archiveName "${project.name}-${project.version}-${project.env}.war"
+//}
+
+//awsplugin {
+//    region = "eu-west-1"
+//}
+
+//task createWebServer(type:CreateInstanceTask) {
+//    imageId = {webServerAmi}
+//    instanceType = "t2.micro"
+//    securityGroup = "restricted"
+//    postInitWaitTime = 60
+//}
+//
+//createWebServer << {
+//    project.envProps.webapp.host = publicIpAddress
+//}
+//
+//task deployWar(type:RemoteExec, dependsOn:[war]) {
+//    host = {project.envProps.webapp.host}
+//    keyFileDir = "/Users/gk"
+//    keyFileName = ".awskey"
+//    remoteUser = {project.remoteUser}
+//    timeout = 120
+//    ext.warFileName = {configurations.archives.artifacts.find{it.type=="war"}.file.name}
+//    ext.remoteDir = {"/home/$remoteUser/buildfiles/$runId"}
+//    exec {
+//        cmd = {"mkdir -p $remoteDir"}
+//    }
+//    scp {
+//        fromDir = "$scriptsDir/webapp"
+//        file = "deployWar.sh"
+//        to = {"$remoteDir"}
+//    }
+//    scp {
+//        fromDir = {configurations.archives.artifacts.find{it.type=="war"}.file.parentFile}
+//        file = {warFileName}
+//        to = {"$remoteDir"}
+//        template = false
+//    }
+//    exec {
+//        sudo = true
+//        cmds = [{"chmod 750 $remoteDir/deployWar.sh"}, {"$remoteDir/deployWar.sh"}]
+//    }
+//}
+//task deployWarToNewWebServer(dependsOn:[createWebServer,deployWar])
+//deployWar.mustRunAfter(createWebServer)
