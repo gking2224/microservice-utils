@@ -8,6 +8,7 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ImportResource;
+import org.springframework.context.annotation.Profile;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.core.io.ClassPathResource;
@@ -26,15 +27,11 @@ import org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer;
 import org.springframework.web.util.UrlPathHelper;
 
 @Configuration
-//@ComponentScan({"me.gking2224.projectms", "me.gking2224.common"})
-@ImportResource("classpath:projectms-webapp-config.xml")
-//@EnableWebMvc
-//@Component
+@Profile("web")
+@ImportResource("classpath:webapp-config.xml")
 public class WebAppConfigurer extends WebMvcConfigurerAdapter implements InitializingBean, ApplicationContextAware {
 
-//    @Autowired
-//    ModelObjectConverters modelObjectConverters;
-//    
+    @SuppressWarnings("unused")
     private ApplicationContext applicationContext;
     
     @Bean
@@ -42,7 +39,6 @@ public class WebAppConfigurer extends WebMvcConfigurerAdapter implements Initial
        PropertySourcesPlaceholderConfigurer p = new PropertySourcesPlaceholderConfigurer();
        p.setLocations(
                new ClassPathResource("webapp.properties"),
-               new ClassPathResource("database.properties"),
                new ClassPathResource("datasource.properties"));
        return p;
     }
@@ -146,13 +142,5 @@ public class WebAppConfigurer extends WebMvcConfigurerAdapter implements Initial
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         this.applicationContext = applicationContext;
     }
-//    @Bean
-//    @Profile("standalone")
-//    public EmbeddedServletContainerFactory getEmbeddedServletContainerFactory() {
-//        TomcatEmbeddedServletContainerFactory factory = new TomcatEmbeddedServletContainerFactory();
-//        factory.setPort(8081);
-//        factory.setSessionTimeout(50, TimeUnit.MINUTES);
-//        return factory;
-//    }
     
 }

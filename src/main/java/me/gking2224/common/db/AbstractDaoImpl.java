@@ -1,4 +1,4 @@
-package me.gking2224.common.db.jpa;
+package me.gking2224.common.db;
 
 import java.sql.CallableStatement;
 import java.sql.Connection;
@@ -7,6 +7,10 @@ import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.PersistenceUnit;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,6 +32,17 @@ import org.springframework.jdbc.datasource.init.UncategorizedScriptException;
  *
  */
 public class AbstractDaoImpl<T> {
+
+    private EntityManager entityManager;
+
+    @PersistenceUnit
+    public void setEntityManagerFactory(EntityManagerFactory emf) {
+        this.entityManager = emf.createEntityManager();
+    }
+    
+    protected EntityManager getEntityManager() {
+        return entityManager;
+    }
     
     public interface ComplexFetchCallback<E> {
 
