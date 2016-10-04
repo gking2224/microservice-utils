@@ -41,7 +41,7 @@ public class SimpleFaultToleranceConfigurer implements FaultToleranceConfigurer 
             retryPolicy = new RetryPolicyBuilder().properties(properties).build();
         }
         
-        logger.debug("Configuring step with skipPolicy{} and retryPolicy {}", skipPolicy, retryPolicy);
+        logger.debug("Configuring step with skipPolicy {} and retryPolicy {}", skipPolicy, retryPolicy);
         
         FaultTolerantStepBuilder<I, O> ftBuilder = builder
                 .faultTolerant()

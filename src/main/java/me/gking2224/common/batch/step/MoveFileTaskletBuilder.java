@@ -10,6 +10,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,13 +19,15 @@ import org.springframework.batch.core.scope.context.ChunkContext;
 import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.repeat.RepeatStatus;
 
+import me.gking2224.common.ObjectOrSupplier;
+
 public class MoveFileTaskletBuilder {
 
     private static Logger logger = LoggerFactory.getLogger(MoveFileTaskletBuilder.class);
     
     private static final String SUCCESS_MSG = "Successfully moved file {} to {}";
     
-    private File file;
+    private ObjectOrSupplier<File> file;
     private String suffix;
     private File toDir;
     private String newName;
@@ -36,7 +39,12 @@ public class MoveFileTaskletBuilder {
     }
     
     public MoveFileTaskletBuilder file(File file) {
-        this.file = file;
+        this.file = new ObjectOrSupplier<File>(file);
+        return this;
+    }
+    
+    public MoveFileTaskletBuilder file(Supplier<File> file) {
+        this.file = new ObjectOrSupplier<File>(file);
         return this;
     }
     
@@ -61,27 +69,34 @@ public class MoveFileTaskletBuilder {
             public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
                 validate();
                 
-                File newFile = new File(toDir, newName);
-                Path from = FileSystems.getDefault().getPath(file.getAbsolutePath());
+                File newFile = new File(toDir, buildNewName());
+                File f = file.get();
+                Path from = FileSystems.getDefault().getPath(f.getAbsolutePath());
                 Path to = FileSystems.getDefault().getPath(newFile.getAbsolutePath());
                 List<CopyOption> options = new ArrayList<CopyOption>();
                 if (replaceExisting) options.add(REPLACE_EXISTING);
                 Files.move(from, to, options.toArray(new CopyOption[options.size()]));
-                logger.debug(SUCCESS_MSG, file.getAbsoluteFile(), newFile.getAbsolutePath());
+                logger.debug(SUCCESS_MSG, f.getAbsolutePath(), newFile.getAbsolutePath());
                 return FINISHED;
                 
             }
 
             private void validate() {
-                if (!file.isFile()) throw new TaskletFailedException(String.format("File %s is not a file", file.getAbsolutePath()));
-                if (newName == null && suffix == null && toDir != null && toDir.getAbsolutePath().equals(file.getAbsoluteFile()))
+                File f = file.get();
+                if (!f.isFile()) throw new TaskletFailedException(String.format("File %s is not a file", f.getAbsolutePath()));
+                if (newName == null && suffix == null && toDir != null && toDir.getAbsolutePath().equals(f.getAbsoluteFile()))
                     throw new TaskletFailedException("Source and destination files are equal");
                 if (newName != null && suffix != null) throw new TaskletFailedException("Cannot specify newName as well as suffix");
-                if (newName == null && suffix != null) newName = String.format("%s.%s", file.getName(), suffix);
-                if (newName == null && toDir == null) throw new TaskletFailedException("At least one of newName, suffix or toDir must be specified");
-                if (toDir == null) toDir = file.getParentFile();
+                if (newName == null && suffix == null && toDir == null) throw new TaskletFailedException("At least one of newName, suffix or toDir must be specified");
+                if (toDir == null) toDir = f.getParentFile();
             }
         };
+    }
+
+    protected String buildNewName() {
+        if (newName != null) return newName;
+        else if (suffix != null) return String.format("%s.%s", file.get().getName(), suffix);
+        else return file.get().getName();
     }
     
 }

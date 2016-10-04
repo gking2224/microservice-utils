@@ -74,12 +74,12 @@ public class SkipPolicyBuilder {
     protected SkipPolicy limited() {
         if (this.limit == null) limit = PropertyUtils.getInteger(properties, "skipPolicy.limited.skipLimit", DEFAULT_LIMIT);
 
-        Set<String> retryClasses = commaDelimitedListToSet(getString(properties, "skipPolicy.limited.retryOn", ""));
-        Set<String> doNotRetryClasses = commaDelimitedListToSet(getString(properties, "skipPolicy.limited.doNotRetryOn", ""));
+        Set<String> skippableClasses = commaDelimitedListToSet(getString(properties, "skipPolicy.limited.skipOn", "java.lang.Throwable"));
+        Set<String> nonSkippableClasses = commaDelimitedListToSet(getString(properties, "skipPolicy.limited.doNotSkipOn", ""));
         
         Map<Class<? extends Throwable>, Boolean> exceptionMap = new HashMap<Class<? extends Throwable>, Boolean>();
-        retryClasses.stream().map(toMapEntry(TRUE)).forEach(populateMap(exceptionMap));
-        doNotRetryClasses.stream().map(toMapEntry(FALSE)).forEach(populateMap(exceptionMap));
+        skippableClasses.stream().map(toMapEntry(TRUE)).forEach(populateMap(exceptionMap));
+        nonSkippableClasses.stream().map(toMapEntry(FALSE)).forEach(populateMap(exceptionMap));
         
         LimitCheckingItemSkipPolicy policy = new LimitCheckingItemSkipPolicy(limit, exceptionMap);
         return policy;

@@ -10,19 +10,22 @@ public class ListItemReader<I> extends AbstractItemCountingItemStreamItemReader<
     
     private static Logger logger = LoggerFactory.getLogger(ListItemReader.class);
 
-    List<I> list;
+    private List<I> itemList;
 
-    public ListItemReader(String name, List<I> list) {
+    public ListItemReader(String name) {
         super();
         super.setName(name);
-        this.list = list;
+    }
+    
+    public void setItemList(final List<I> itemList) {
+        this.itemList = itemList;
     }
 
     @Override
     protected I doRead() throws Exception {
         int idx = super.getCurrentItemCount() -1;
-        if (idx >= list.size()) return null;
-        I item = list.get(idx);
+        if (idx >= itemList.size()) return null;
+        I item = itemList.get(idx);
         logger.debug("Read item from list: {}", item);
         return item;
     }

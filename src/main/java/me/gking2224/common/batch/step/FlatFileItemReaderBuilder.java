@@ -49,12 +49,13 @@ public class FlatFileItemReaderBuilder<T> {
     public FlatFileItemReader<T> build() {
         
         FlatFileItemReader<T> fr = new FlatFileItemReader<T>();
-        if (!file.exists()) {
-            throw new FatalStepExecutionException(format("File (%s) not found for reading", file.getAbsolutePath()), null);
+        if (file != null) {
+            if (!file.exists())
+                throw new FatalStepExecutionException(format("File (%s) not found for reading", file.getAbsolutePath()), null);
+            FileSystemResource resource = new FileSystemResource(file);
+            fr.setResource(resource);
         }
 
-        FileSystemResource resource = new FileSystemResource(file);
-        fr.setResource(resource);
         fr.setName(name);
         fr.setSkippedLinesCallback(handler);
         fr.setLineMapper(lineMapper);

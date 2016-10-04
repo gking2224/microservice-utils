@@ -31,8 +31,6 @@ import org.springframework.context.annotation.Profile;
 
 import me.gking2224.common.batch.FaultToleranceConfigurer;
 import me.gking2224.common.batch.SimpleFaultToleranceConfigurer;
-import me.gking2224.common.batch.SimpleStepConfigurer;
-import me.gking2224.common.batch.StepConfigurer;
 import me.gking2224.common.utils.NestedProperties;
 import me.gking2224.common.utils.ObjectUtils;
 
@@ -56,12 +54,6 @@ public abstract class AbstractStep implements InitializingBean, ExceptionHandler
     protected StepBuilderFactory steps;
 
     private ThreadLocal<StepExecution> stepExecution = new ThreadLocal<StepExecution>();
-    
-    private StepConfigurer stepConfigurer;
-    
-    protected StepConfigurer getStepConfigurer() {
-        return stepConfigurer;
-    }
     
     private FaultToleranceConfigurer faultToleranceConfigurer;
     
@@ -167,7 +159,6 @@ public abstract class AbstractStep implements InitializingBean, ExceptionHandler
     public final void afterPropertiesSet() throws Exception {
         initProperties();
         if (this.properties != null) {
-            stepConfigurer = new SimpleStepConfigurer().properties(this.properties);
             faultToleranceConfigurer = new SimpleFaultToleranceConfigurer(this.properties);
         }
         doAfterPropertiesSet();

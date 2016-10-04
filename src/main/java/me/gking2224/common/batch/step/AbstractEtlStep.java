@@ -1,9 +1,7 @@
 package me.gking2224.common.batch.step;
 
-import static me.gking2224.common.batch.BatchConstants.SKIPPED_ITEMS_LIST;
 import static org.apache.commons.lang.exception.ExceptionUtils.getRootCauseMessage;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.batch.core.ItemReadListener;
@@ -13,7 +11,6 @@ import org.springframework.batch.core.annotation.OnSkipInProcess;
 import org.springframework.batch.core.annotation.OnSkipInRead;
 import org.springframework.batch.core.annotation.OnSkipInWrite;
 import org.springframework.batch.core.scope.context.ChunkContext;
-import org.springframework.batch.core.step.FatalStepExecutionException;
 import org.springframework.batch.item.file.LineCallbackHandler;
 import org.springframework.retry.RetryCallback;
 import org.springframework.retry.RetryContext;
@@ -24,7 +21,6 @@ implements ItemReadListener<I>, ItemWriteListener<O>, RetryListener, LineCallbac
 
     @Override
     protected final void doBeforeStep() {
-        putInJobContext(SKIPPED_ITEMS_LIST, new ArrayList<O>());
         doBeforeEtlStep();
     }
     protected void doBeforeEtlStep() {}
@@ -32,10 +28,6 @@ implements ItemReadListener<I>, ItemWriteListener<O>, RetryListener, LineCallbac
     @OnSkipInWrite
     public final void onSkipInWrite(O item, Throwable t) {
         getLogger().error("onSkipInWrite ({}): {}", item, getRootCauseMessage(t));
-        @SuppressWarnings("unchecked")
-        List<O> failures = getFromJobContext(SKIPPED_ITEMS_LIST, List.class).orElseThrow(
-                () -> new FatalStepExecutionException("SKIPPED_ITEMS_LIST not initialized", null));
-        failures.add(item);
         doOnSkipInWrite(item, t);
     }
     protected void doOnSkipInWrite(O item, Throwable t) {}

@@ -4,6 +4,12 @@ import org.springframework.batch.core.ExitStatus;
 
 public interface BatchConstants {
 
+    String CSV_FILE_PATTERN = "CSV_FILE_PATTERN";
+    String CSV_FILE = "CSV_FILE";
+    String IN_DIR = "IN_DIR";
+    String OUT_DIR = "OUT_DIR";
+    String BAD_FILE = "BAD_FILE";
+
     // ATTRIBUTES
     String BATCH_DATE = "BATCH_DATE";
     String EXECUTION_TIME = "EXECUTION_TIME";
@@ -11,6 +17,7 @@ public interface BatchConstants {
     String BAD_SUFFIX = "BAD_SUFFIX";
     String PROCESSED_SUFFIX = "PROCESSED_SUFFIX";
     String SEMAPHORE_SUFFIX = "SEMAPHORE_SUFFIX";
+    String BATCH_FILES_LOCATION = "%s/batch/files/%s";
     
     // STATUS STRINGS
     String COMPLETED = "COMPLETED";

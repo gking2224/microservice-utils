@@ -22,8 +22,6 @@ import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.support.TransactionTemplate;
 
-@Configuration
-@Profile({"dev", "test", "prod"})
 //@ManagedResource(
 //        log=true,
 //        logFile="jmx.log",

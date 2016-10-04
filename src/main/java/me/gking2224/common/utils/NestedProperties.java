@@ -57,13 +57,13 @@ public class NestedProperties extends Properties {
         if (initialKey == null) return null;
         Object key = prefix(initialKey.toString());
         Object value = func.apply(key);
-        if (value != null) {
+        if (value != null && !NestedProperties.class.isAssignableFrom(wrapped.getClass())) {
             logger.debug("Using {}={}", key, value);
         }
         if (value == null) {
             key = initialKey;
             value = func.apply(key);
-            if (value != null) {
+            if (value != null && !NestedProperties.class.isAssignableFrom(wrapped.getClass())) {
                 logger.debug("Using {}={}", key, value);
             }
         }
