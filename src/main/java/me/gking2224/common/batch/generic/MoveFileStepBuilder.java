@@ -22,10 +22,10 @@ public class MoveFileStepBuilder extends AbstractBatchStepBuilder<MoveFileStepBu
     public MoveFileStepBuilder(
             final StepBuilderFactory steps,
             final Properties parentProperties,
-            final String jobName,
+            final String flowName,
             final String stepName
     ) {
-        super(steps, parentProperties, jobName, stepName);
+        super(steps, parentProperties, flowName, stepName);
     }
     
     public MoveFileStepBuilder suffix(final String suffix) {

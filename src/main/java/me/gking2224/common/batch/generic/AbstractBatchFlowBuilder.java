@@ -24,6 +24,10 @@ public abstract class AbstractBatchFlowBuilder extends AbstractBatchBuilder {
     }
 
     protected String getFlowStepName() {
-        return getFlowName()+"Flow";
+        return getFullName()+"Flow";
+    }
+
+    protected String getFullName() {
+        return getFlowName();
     }
 }

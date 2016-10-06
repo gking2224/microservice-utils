@@ -48,6 +48,9 @@ public abstract class AbstractBatchBuilder {
     }
     
     protected final Supplier<RuntimeException> notInitialized(final String key) {
-        return () -> new FatalStepExecutionException(format("%s not initialized", key), null);
+        return () -> new FatalStepExecutionException(format("%s: %s not initialized", getFullName(), key), null);
     }
+
+    protected abstract String getFullName();
+    
 }

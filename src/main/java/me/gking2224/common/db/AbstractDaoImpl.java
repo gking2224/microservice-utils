@@ -10,6 +10,7 @@ import java.util.Map;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.FlushModeType;
 import javax.persistence.PersistenceUnit;
 
 import org.slf4j.Logger;
@@ -37,11 +38,16 @@ public class AbstractDaoImpl<T> {
 
     @PersistenceUnit
     public void setEntityManagerFactory(EntityManagerFactory emf) {
-        this.entityManager = emf.createEntityManager();
+        entityManager = emf.createEntityManager();
     }
     
     protected EntityManager getEntityManager() {
         return entityManager;
+    }
+    
+    protected void flush() {
+        entityManager.joinTransaction();
+        entityManager.flush();
     }
     
     public interface ComplexFetchCallback<E> {

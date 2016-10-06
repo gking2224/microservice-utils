@@ -19,7 +19,7 @@ import org.springframework.batch.core.scope.context.ChunkContext;
 import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.repeat.RepeatStatus;
 
-import me.gking2224.common.ObjectOrSupplier;
+import me.gking2224.common.utils.ObjectOrSupplier;
 
 public class MoveFileTaskletBuilder {
 

@@ -2,13 +2,13 @@ package me.gking2224.common.web;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.ImportResource;
-import org.springframework.context.annotation.Profile;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.core.io.ClassPathResource;
@@ -16,6 +16,7 @@ import org.springframework.format.FormatterRegistry;
 import org.springframework.ui.freemarker.FreeMarkerConfigurationFactoryBean;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.util.PathMatcher;
+import org.springframework.web.servlet.config.annotation.CorsRegistration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.DefaultServletHandlerConfigurer;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
@@ -26,11 +27,13 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 import org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer;
 import org.springframework.web.util.UrlPathHelper;
 
-@Configuration
-@Profile("web")
 @ImportResource("classpath:webapp-config.xml")
-public class WebAppConfigurer extends WebMvcConfigurerAdapter implements InitializingBean, ApplicationContextAware {
+@ComponentScan("me.gking2224.common.web")
+public class CommonWebAppConfiguration extends WebMvcConfigurerAdapter implements InitializingBean, ApplicationContextAware {
 
+    @Autowired
+    private WebConfigurationOptions options;
+    
     @SuppressWarnings("unused")
     private ApplicationContext applicationContext;
     
@@ -117,21 +120,10 @@ public class WebAppConfigurer extends WebMvcConfigurerAdapter implements Initial
     
     @Override
     public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("/**")
-            .allowedMethods("PUT", "DELETE", "POST", "GET")
-            .allowedOrigins(
-//                "http://modelserver.console.gking2224.me",
-                "http://localhost:3000",
-                "http://localhost:3001",
-                "http://localhost:3002",
-                "http://localhost:3003",
-                "http://localhost:3004",
-                "http://localhost:3005",
-                "http://localhost:3006",
-                "http://localhost:3007",
-                "http://localhost:3008",
-                "http://localhost:3009"
-                );
+        CorsRegistration mapping = registry.addMapping("/**");
+        mapping
+            .allowedMethods("PUT", "DELETE", "POST", "GET");
+        mapping.allowedOrigins(options.getAllowedCorsOrigins());
     }
 
     @Override

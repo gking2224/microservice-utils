@@ -30,10 +30,10 @@ extends AbstractBatchEtlStepBuilder<ProcessFileStepBuilder<I, O>, I, O> {
     public ProcessFileStepBuilder(
             final StepBuilderFactory steps,
             final Properties parentProperties,
-            final String jobName,
+            final String flowName,
             final String stepName
     ) {
-        super(steps, parentProperties, jobName, stepName);
+        super(steps, parentProperties, flowName, stepName);
     }
 
     private Function<O, Void> writeFunction;

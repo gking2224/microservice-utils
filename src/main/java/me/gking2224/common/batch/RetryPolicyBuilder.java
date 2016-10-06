@@ -139,7 +139,7 @@ public class RetryPolicyBuilder {
 
     private Consumer<Entry<Class<? extends Throwable>, Boolean>> populateMap(Map<Class<? extends Throwable>, Boolean> exceptionMap) {
         return (Entry<Class<? extends Throwable>, Boolean> e) -> {
-            if (e != null) exceptionMap.put(e.getKey(), e.getValue());
+            if (e != null && e.getKey() != null) exceptionMap.put(e.getKey(), e.getValue());
         };
     }
 

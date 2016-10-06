@@ -32,16 +32,23 @@ import org.springframework.batch.item.file.transform.FieldExtractor;
 
 import me.gking2224.common.batch.BatchConstants;
 
-public class ProcessFileBatchFlowBuilder<I, O> extends AbstractBatchFlowBuilder {
+/**
+ * 
+ * @author gk
+ *
+ * @param <L> The raw type read from a line in the file
+ * @param <E> The converted entity type
+ */
+public class ProcessFileBatchFlowBuilder<L, E> extends AbstractBatchFlowBuilder {
     
     private Logger logger = LoggerFactory.getLogger(ProcessFileBatchFlowBuilder.class);
 
-    private Function<String[], I> fieldsMapper;
+    private Function<String[], L> fieldsMapper;
     private String[] fieldNames;
-    private Function<O, Void> writeFunction;
-    private FieldExtractor<I> fieldExtractor;
-    private Function<O, I> writeToFileProcessorFunction;
-    private Function<I, O> readFromFileProcessorFunction;
+    private Function<E, Void> writeFunction;
+    private FieldExtractor<String> fieldExtractor = (s) -> new String[] { s };
+    private Function<Object, String> writeToBadFileProcessorFunction;
+    private Function<L, E> readFromFileProcessorFunction;
 
     public ProcessFileBatchFlowBuilder(final StepBuilderFactory steps, final Properties parentProperties,
             final String jobName) {
@@ -56,22 +63,22 @@ public class ProcessFileBatchFlowBuilder<I, O> extends AbstractBatchFlowBuilder 
                 .fileProvider(fileProvider(getFileKey()))
                 .build();
         
-        Step process = new ProcessFileStepBuilder<I, O>(getSteps(), getProperties(), "process", getFlowName())
-                .lineMapper(new LineMapperBuilder<I>().mapFunction(fieldsMapper).fieldName(fieldNames).build())
+        Step process = new ProcessFileStepBuilder<L, E>(getSteps(), getProperties(), getFlowName(), "process")
+                .lineMapper(new LineMapperBuilder<L>().mapFunction(fieldsMapper).fieldName(fieldNames).build())
                 .writeFunction(writeFunction)
                 .fileProvider(fileProvider(getFileKey()))
                 .skippedItems(skippedItems())
                 .processorFunction(readFromFileProcessorFunction)
                 .build();
         
-        Step writeBadRecords = new WriteRecordsStepBuilder<O, I>(getSteps(), getProperties(), "writeBadRecords", getFlowName())
+        Step writeBadRecords = new WriteRecordsStepBuilder<Object, String>(getSteps(), getProperties(), getFlowName(), "writeBadRecords")
                 .itemsProvider(skippedItems())
                 .fileProvider(fileProvider(getBadFileKey()))
                 .fieldExtractor(fieldExtractor)
-                .processorFunction(writeToFileProcessorFunction)
+                .processorFunction(writeToBadFileProcessorFunction)
                 .build();
         
-        Step markProcessed = new MoveFileStepBuilder(getSteps(), getProperties(), "markProcessed", getFlowName())
+        Step markProcessed = new MoveFileStepBuilder(getSteps(), getProperties(), getFlowName(), "markProcessed")
                 .fileProvider(fileProvider(getFileKey()))
                 .build();
         JobExecutionDecider decider = flowDecider();
@@ -120,8 +127,8 @@ public class ProcessFileBatchFlowBuilder<I, O> extends AbstractBatchFlowBuilder 
     }
 
     @SuppressWarnings("unchecked")
-    private Function<StepExecutionHolder, List<O>> skippedItems() {
-        return (ctx) -> (List<O>) ctx.getFromJobContext(skippedItemsKey(), List.class).orElseThrow(notInitialized(skippedItemsKey()));
+    private Function<StepExecutionHolder, List<Object>> skippedItems() {
+        return (ctx) -> (List<Object>) ctx.getFromJobContext(skippedItemsKey(), List.class).orElseThrow(notInitialized(skippedItemsKey()));
     }
 
     private String skippedItemsKey() {
@@ -153,37 +160,37 @@ public class ProcessFileBatchFlowBuilder<I, O> extends AbstractBatchFlowBuilder 
                 format("/%s-%s.csv.bad", getFlowName(), ctx.getBatchDate())));
         params.put(getJobKey(IN_DIR), inDir);
         params.put(getJobKey(OUT_DIR), outDir);
-        params.put(skippedItemsKey(), new ArrayList<O>(0));
+        params.put(skippedItemsKey(), new ArrayList<E>(0));
         return params;
     }
 
-    public ProcessFileBatchFlowBuilder<I, O> fieldsMapper(final Function<String[], I> fieldsMapper) {
+    public ProcessFileBatchFlowBuilder<L, E> fieldsMapper(final Function<String[], L> fieldsMapper) {
         this.fieldsMapper = fieldsMapper;
         return this;
     }
 
-    public ProcessFileBatchFlowBuilder<I, O> fieldExtractor(final FieldExtractor<I> fieldExtractor) {
+    public ProcessFileBatchFlowBuilder<L, E> fieldExtractor(final FieldExtractor<String> fieldExtractor) {
         this.fieldExtractor = fieldExtractor;
         return this;
     }
 
-    public ProcessFileBatchFlowBuilder<I, O> fieldNames(String... fieldNames) {
+    public ProcessFileBatchFlowBuilder<L, E> fieldNames(String... fieldNames) {
         this.fieldNames = fieldNames;
         return this;
     }
 
-    public ProcessFileBatchFlowBuilder<I, O> writeFunction(Function<O, Void> writeFunction) {
+    public ProcessFileBatchFlowBuilder<L, E> writeFunction(Function<E, Void> writeFunction) {
         this.writeFunction = writeFunction;
         return this;
     }
 
-    public ProcessFileBatchFlowBuilder<I, O> readFromFileProcessorFunction(Function<I, O> readFromFileProcessorFunction) {
+    public ProcessFileBatchFlowBuilder<L, E> readFromFileProcessorFunction(Function<L, E> readFromFileProcessorFunction) {
         this.readFromFileProcessorFunction = readFromFileProcessorFunction;
         return this;
     }
 
-    public ProcessFileBatchFlowBuilder<I, O> writeToFileProcessorFunction(Function<O, I> writeToFileProcessorFunction) {
-        this.writeToFileProcessorFunction = writeToFileProcessorFunction;
+    public ProcessFileBatchFlowBuilder<L, E> writeToBadFileProcessorFunction(Function<Object, String> writeToBadFileProcessorFunction) {
+        this.writeToBadFileProcessorFunction = writeToBadFileProcessorFunction;
         return this;
     }
 

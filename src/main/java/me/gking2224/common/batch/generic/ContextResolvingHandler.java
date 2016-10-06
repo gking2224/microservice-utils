@@ -1,6 +1,7 @@
 package me.gking2224.common.batch.generic;
 
 import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
@@ -21,7 +22,12 @@ public class ContextResolvingHandler implements InvocationHandler {
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         
         if (doIntercept(method.getName())) {
-            return method.invoke(this.delegate, args);
+            try {
+                return method.invoke(this.delegate, args);
+            }
+            catch(InvocationTargetException e) {
+                throw e.getTargetException();
+            }
         }
         else return null;
     }

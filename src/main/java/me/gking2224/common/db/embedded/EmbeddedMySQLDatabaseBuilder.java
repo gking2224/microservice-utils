@@ -26,6 +26,7 @@ public class EmbeddedMySQLDatabaseBuilder {
     private int port = new Random().nextInt(10000) + 3306;
     private final String username = "root";
     private boolean foreignKeyCheck = true;
+    private boolean persistent = false;
 
     private final ResourceLoader resourceLoader;
     private final ResourceDatabasePopulator databasePopulator;
@@ -53,6 +54,7 @@ public class EmbeddedMySQLDatabaseBuilder {
         }
         logger.debug("database url: {}", url);
         database.setUrl(url);
+        database.setPersistent(persistent);
         return database;
     }
 
@@ -63,7 +65,7 @@ public class EmbeddedMySQLDatabaseBuilder {
             logger.debug("databaseName : " + databaseName);
             logger.debug("host : localhost (hardcoded)");
             logger.debug("port : " + port);
-            logger.debug("username : root (hardcoded");
+            logger.debug("username : root (hardcoded)");
             logger.debug("password : (no password)");
             logger.debug("=============================================================================");
         }
@@ -102,6 +104,10 @@ public class EmbeddedMySQLDatabaseBuilder {
     }
     public EmbeddedMySQLDatabaseBuilder addDefaultScripts() {
         return addScripts("schema.sql", "data.sql");
+    }
+    public EmbeddedMySQLDatabaseBuilder persistent() {
+        this.persistent = true;
+        return this;
     }
 
     /**

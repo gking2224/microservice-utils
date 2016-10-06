@@ -13,6 +13,7 @@ public class EmbeddedMySQLDatabase extends DriverManagerDataSource {
     private final Logger logger = LoggerFactory.getLogger(EmbeddedMySQLDatabase.class);
     private final MysqldResource mysqldResource;
     private String databaseName;
+    private boolean persistent = false;
 
     public EmbeddedMySQLDatabase(MysqldResource mysqldResource) {
         this.mysqldResource = mysqldResource;
@@ -21,7 +22,7 @@ public class EmbeddedMySQLDatabase extends DriverManagerDataSource {
     public void shutdown() {
         if (mysqldResource != null) {
             mysqldResource.shutdown();
-            if (!mysqldResource.isRunning()) {
+            if (!mysqldResource.isRunning() && !persistent) {
                 logger.info("Deleting MySQL baseDir: {}", mysqldResource.getBaseDir());
                 try {
                     FileUtils.forceDelete(mysqldResource.getBaseDir());
@@ -38,5 +39,9 @@ public class EmbeddedMySQLDatabase extends DriverManagerDataSource {
 
     public String getDatabaseName() {
         return databaseName;
+    }
+
+    public void setPersistent(boolean persistent) {
+        this.persistent= persistent;
     }
 }

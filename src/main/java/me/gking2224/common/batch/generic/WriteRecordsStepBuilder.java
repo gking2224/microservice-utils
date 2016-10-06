@@ -27,6 +27,12 @@ import org.springframework.core.io.FileSystemResource;
 
 import me.gking2224.common.batch.step.ListItemReader;
 
+/**
+ * 
+ * @author gk
+ *
+ * @param <O>
+ */
 public class WriteRecordsStepBuilder<I, O> extends AbstractBatchEtlStepBuilder<WriteRecordsStepBuilder<I, O>, I, O> {
     
     private static Logger logger = LoggerFactory.getLogger(ProcessFileStepBuilder.class);
@@ -36,8 +42,8 @@ public class WriteRecordsStepBuilder<I, O> extends AbstractBatchEtlStepBuilder<W
     private Function<StepExecutionHolder, List<I>> itemsProvider;
 
     public WriteRecordsStepBuilder(final StepBuilderFactory steps, final Properties parentProperties,
-            final String jobName, final String stepName) {
-        super(steps, parentProperties, jobName, stepName);
+            final String flowName, final String stepName) {
+        super(steps, parentProperties, flowName, stepName);
     }
 
     public WriteRecordsStepBuilder<I, O> fileProvider(final Function<StepExecutionHolder, File> fileProvider) {

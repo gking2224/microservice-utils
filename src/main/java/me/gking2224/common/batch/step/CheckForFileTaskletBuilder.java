@@ -19,10 +19,10 @@ import org.springframework.retry.RetryPolicy;
 import org.springframework.retry.backoff.BackOffPolicy;
 import org.springframework.retry.support.RetryTemplate;
 
-import me.gking2224.common.ObjectOrSupplier;
 import me.gking2224.common.batch.BackOffPolicyBuilder;
 import me.gking2224.common.batch.RetryPolicyBuilder;
 import me.gking2224.common.batch.generic.AbstractTaskletBuilder;
+import me.gking2224.common.utils.ObjectOrSupplier;
 
 public class CheckForFileTaskletBuilder extends AbstractTaskletBuilder<CheckForFileTaskletBuilder> {
     

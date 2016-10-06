@@ -9,7 +9,6 @@ import org.springframework.batch.repeat.RepeatContext;
 import org.springframework.batch.repeat.exception.ExceptionHandler;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.io.ClassPathResource;
@@ -18,7 +17,6 @@ import org.springframework.retry.backoff.BackOffPolicy;
 
 import me.gking2224.common.utils.NestedProperties;
 
-@Configuration
 @PropertySource("/batch.properties")
 @Profile("batch")
 public class CommonBatchConfiguration {

@@ -1,12 +1,14 @@
 package me.gking2224.common;
 
+import java.text.SimpleDateFormat;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
 
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 
-@Configuration
+@ComponentScan("me.gking2224.common.utils")
 public class CommonConfiguration {
 
     private static final String DATE_SEPARATOR = "-";
@@ -16,6 +18,13 @@ public class CommonConfiguration {
 
     @Bean(name="longDateTimeFormat") DateTimeFormatter getLongDateTimeFormatter() {
         return DateTimeFormatter.RFC_1123_DATE_TIME;
+    }
+
+    @Bean
+    public Jackson2ObjectMapperBuilder jacksonBuilder() {
+        Jackson2ObjectMapperBuilder b = new Jackson2ObjectMapperBuilder();
+        b.indentOutput(true).dateFormat(new SimpleDateFormat("yyyy-MM-dd"));
+        return b;
     }
 
     @Bean(name="shortDateTimeFormat") DateTimeFormatter getShortDateTimeFormatter() {

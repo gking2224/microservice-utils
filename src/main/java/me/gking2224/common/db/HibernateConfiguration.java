@@ -1,9 +1,9 @@
 package me.gking2224.common.db;
 
-import static me.gking2224.common.db.DatabaseConfiguration.DRIVER_PROPERTY;
-import static me.gking2224.common.db.DatabaseConfiguration.PASSWORD_PROPERTY;
-import static me.gking2224.common.db.DatabaseConfiguration.URL_PROPERTY;
-import static me.gking2224.common.db.DatabaseConfiguration.USERNAME_PROPERTY;
+import static me.gking2224.common.db.CommonDatabaseConfiguration.DRIVER_PROPERTY;
+import static me.gking2224.common.db.CommonDatabaseConfiguration.PASSWORD_PROPERTY;
+import static me.gking2224.common.db.CommonDatabaseConfiguration.URL_PROPERTY;
+import static me.gking2224.common.db.CommonDatabaseConfiguration.USERNAME_PROPERTY;
 import static me.gking2224.common.utils.PropertyUtils.getString;
 import static me.gking2224.common.utils.SpringConfigurationUtils.initPropMissing;
 
@@ -15,15 +15,17 @@ import javax.sql.DataSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.support.PropertiesLoaderUtils;
 import org.springframework.orm.jpa.JpaDialect;
 import org.springframework.orm.jpa.JpaVendorAdapter;
 import org.springframework.orm.jpa.vendor.HibernateJpaDialect;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
-import org.springframework.stereotype.Component;
 
-@Component
+import me.gking2224.common.utils.PropertyUtils;
+
+@Configuration
 public class HibernateConfiguration {
     
     @Autowired(required=true)
@@ -49,6 +51,7 @@ public class HibernateConfiguration {
     }
 
     private String getProperty(final String property) {
+        PropertyUtils.getString(dataSourceProperties, property).orElseThrow(initPropMissing(property));
         return getString(dataSourceProperties, property).orElseThrow(initPropMissing(property));
     }
     

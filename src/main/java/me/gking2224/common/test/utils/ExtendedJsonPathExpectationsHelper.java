@@ -1,4 +1,4 @@
-package me.gking2224.common.utils.test;
+package me.gking2224.common.test.utils;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 

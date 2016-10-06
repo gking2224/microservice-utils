@@ -1,4 +1,4 @@
-package me.gking2224.common;
+package me.gking2224.common.utils;
 
 import java.util.function.Supplier;
 

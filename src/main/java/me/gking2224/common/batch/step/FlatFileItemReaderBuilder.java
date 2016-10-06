@@ -12,7 +12,10 @@ import org.springframework.batch.core.step.FatalStepExecutionException;
 import org.springframework.batch.item.file.FlatFileItemReader;
 import org.springframework.batch.item.file.LineCallbackHandler;
 import org.springframework.batch.item.file.LineMapper;
+import org.springframework.batch.item.file.separator.RecordSeparatorPolicy;
 import org.springframework.core.io.FileSystemResource;
+
+import me.gking2224.common.batch.generic.SkipBlanksRecordSeparatorPolicy;
 
 public class FlatFileItemReaderBuilder<T> {
 
@@ -26,6 +29,8 @@ public class FlatFileItemReaderBuilder<T> {
     private LineCallbackHandler handler;
 
     private LineMapper<T> lineMapper;
+
+    private RecordSeparatorPolicy recordSeparatorPolicy = new SkipBlanksRecordSeparatorPolicy();
 
     public FlatFileItemReaderBuilder(Properties properties) {
         this.properties = properties;
@@ -62,6 +67,7 @@ public class FlatFileItemReaderBuilder<T> {
         fr.setLinesToSkip(getInteger(properties, "reader.headerLines", DEFAULT_HEADER_LINES));
         fr.setStrict(getBoolean(properties, "reader.strict", DEFAULT_STRICT));
         fr.setComments(getStringArray(properties, "reader.comments", new String[] {"#"}));
+        fr.setRecordSeparatorPolicy(recordSeparatorPolicy);
         
         return fr;
     }

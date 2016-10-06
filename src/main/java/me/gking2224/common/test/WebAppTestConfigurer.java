@@ -1,4 +1,4 @@
-package me.gking2224.common.utils.test;
+package me.gking2224.common.test;
 
 
 import org.springframework.context.ApplicationListener;

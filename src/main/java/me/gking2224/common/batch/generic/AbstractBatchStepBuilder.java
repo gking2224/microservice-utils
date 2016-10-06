@@ -23,9 +23,9 @@ implements StepExecutionListener {
     public AbstractBatchStepBuilder(
             final StepBuilderFactory steps,
             final Properties parentProperties,
-            final String jobName, String stepName
+            final String flowName, String stepName
     ) {
-        super(steps, parentProperties, jobName);
+        super(steps, parentProperties, flowName);
         this.stepName = stepName;
     }
 
@@ -37,13 +37,17 @@ implements StepExecutionListener {
         return stepName;
     }
 
+    protected String getFullName() {
+        return getFlowName()+"."+getStepName();
+    }
+
     protected final StepBuilder stepBuilder() {
-        StepBuilder builder = getSteps().get(getFlowName()+getStepName());
+        StepBuilder builder = getSteps().get(getFullName());
+        builder = builder.listener(stepExecutionHolder);
         builder.listener((StepExecutionListener)this);
         if (this.stepExecutionListener != null) {
             builder = builder.listener(this.stepExecutionListener);
         }
-        builder = builder.listener(stepExecutionHolder);
         
         return builder;
     }
@@ -62,14 +66,14 @@ implements StepExecutionListener {
 
     @Override
     public final void beforeStep(StepExecution stepExecution) {
-        getLogger().debug("before step: {}", stepExecution);
+        getLogger().debug("{}: before step: {}", getFullName(), stepExecution);
         doBeforeStep(stepExecution);
     }
     protected void doBeforeStep(StepExecution stepExecution) {}
 
     @Override
     public final ExitStatus afterStep(StepExecution stepExecution) {
-        getLogger().debug("after step: {}", stepExecution);
+        getLogger().debug("{}: after step: {}", getFullName(), stepExecution);
         return doAfterStep(stepExecution);
     }
     protected ExitStatus doAfterStep(StepExecution stepExecution) {

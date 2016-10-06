@@ -12,16 +12,13 @@ import org.springframework.batch.core.ItemReadListener;
 import org.springframework.batch.core.ItemWriteListener;
 import org.springframework.batch.core.SkipListener;
 import org.springframework.batch.core.Step;
+import org.springframework.batch.core.StepExecution;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
 import org.springframework.batch.core.scope.context.ChunkContext;
 import org.springframework.batch.core.step.builder.SimpleStepBuilder;
 import org.springframework.batch.item.ItemReader;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.batch.item.file.LineCallbackHandler;
-import org.springframework.batch.repeat.RepeatCallback;
-import org.springframework.batch.repeat.RepeatException;
-import org.springframework.batch.repeat.RepeatOperations;
-import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.retry.RetryCallback;
 import org.springframework.retry.RetryContext;
 import org.springframework.retry.RetryListener;
@@ -31,7 +28,7 @@ implements ItemReadListener<I>, ItemWriteListener<O>, RetryListener, ItemProcess
 
     private int chunkSize = 5;
     private boolean allowStartIfComplete = true;
-    private Function<StepExecutionHolder, List<O>> skippedWriteItemsProvider;
+    private Function<StepExecutionHolder, List<Object>> skippedItemsProvider;
     @SuppressWarnings("unchecked")
     private Function<I, O> processorFunction = item -> (O)item;
     
@@ -69,8 +66,8 @@ implements ItemReadListener<I>, ItemWriteListener<O>, RetryListener, ItemProcess
     }
 
     @SuppressWarnings("unchecked")
-    public T skippedItems(Function<StepExecutionHolder, List<O>> skippedItems) {
-        this.skippedWriteItemsProvider = skippedItems;
+    public T skippedItems(Function<StepExecutionHolder, List<Object>> function) {
+        this.skippedItemsProvider = function;
         return (T)this;
     }
 
@@ -97,79 +94,81 @@ implements ItemReadListener<I>, ItemWriteListener<O>, RetryListener, ItemProcess
     protected abstract ItemWriter<O> getWriter();
 
     protected String getReaderName() {
-        return getStepName()+"reader";
+        return getStepName()+".reader";
     }
 
     protected String getWriterName() {
-        return getStepName()+"writer";
+        return getStepName()+".writer";
     }
 
     @Override
     public final void onSkipInWrite(O item, Throwable t) {
-        getLogger().error("onSkipInWrite ({}): {}", item, getRootCauseMessage(t));
-        skippedWriteItemsProvider.apply(getStepExecutionHolder()).add(item);
+        getLogger().error("{}: onSkipInWrite ({}): {}", getFullName(), item, getRootCauseMessage(t));
+        skippedItemsProvider.apply(getStepExecutionHolder()).add(item);
         doOnSkipInWrite(item, t);
     }
     protected void doOnSkipInWrite(O item, Throwable t) {}
 
     @Override
     public final void onSkipInRead(Throwable t) {
-        getLogger().debug("onSkipInRead: {}", getRootCauseMessage(t));
+        getLogger().error("{}: onSkipInRead: {}", getFullName(), getRootCauseMessage(t));
+        skippedItemsProvider.apply(getStepExecutionHolder()).add(t);
         doOnSkipInRead(t);
     }
     protected void doOnSkipInRead(Throwable t) {}
 
     @Override
     public final void onSkipInProcess(I item, Throwable t) {
-        getLogger().debug("onSkipInProcess ({}): {}", item, getRootCauseMessage(t));
+        getLogger().debug("{}: onSkipInProcess ({}): {}", getFullName(), item, getRootCauseMessage(t));
+        skippedItemsProvider.apply(getStepExecutionHolder()).add(t);
         doOnSkipInProcess(item, t);
     }
     protected void doOnSkipInProcess(I item, Throwable t) {}
 
     @Override
     public final void afterChunkError(ChunkContext context) {
-        getLogger().debug("afterChunkError {}", context);
+        getLogger().debug("{}: afterChunkError {}", getFullName(), context);
     }
     protected void doAfterChunkError(ChunkContext context) {}
     
     // WRITE LISTENER
     @Override
     public final void beforeWrite(List<? extends O> items) {
-        getLogger().debug("beforeWrite: {}", items);
+        getLogger().debug("{}: beforeWrite: {}", getFullName(), items);
     }
     protected void doBeforeWrite(List<? extends O> items) {}
     @Override
     public final void afterWrite(List<? extends O> items) {
-        getLogger().debug("afterWrite: {}", items);
+        getLogger().debug("{}: afterWrite: {}", getFullName(), items);
     }
     protected void doAfterWrite(List<? extends O> items) {}
     @Override
     public final void onWriteError(Exception exception, List<? extends O> items) {
-        getLogger().error("onWriteError ({}): {}", items, getRootCauseMessage(exception));
+        getLogger().error("{}: onWriteError ({}): {}", getFullName(), items, getRootCauseMessage(exception));
     }
     protected void doOnWriteError(Exception exception, List<? extends O> items) {}
     @Override
     public final void beforeRead() {
-        getLogger().debug("beforeRead");
+        getLogger().debug("{}: beforeRead", getFullName());
     }
     
     // READ LISTENER
     protected void doBeforeRead() {}
     @Override
     public final void afterRead(I item) {
-        getLogger().debug("afterRead {}", item);
+        getLogger().debug("{}: afterRead {}", getFullName(), item);
     }
     protected void doAfterRead(I item) {}
     @Override
     public final void onReadError(Exception ex) {
-        getLogger().error("onReadError: {}", getRootCauseMessage(ex));
+        getLogger().error("{}: onReadError: {}", getFullName(), getRootCauseMessage(ex));
     }
     protected void doOnReadError(Exception ex) {}
     
     // RETRY
     @Override
     public final <R, E extends Throwable> boolean open(RetryContext context, RetryCallback<R, E> callback) {
-        getLogger().debug("retry - open {}, {}", context, callback);
+        getLogger().debug("{}: retry - open {}, {}", getFullName(), context, callback);
         return doOpen(context, callback);
     }
     protected <R, E extends Throwable> boolean doOpen(RetryContext context, RetryCallback<R, E> callback) {
@@ -179,7 +178,7 @@ implements ItemReadListener<I>, ItemWriteListener<O>, RetryListener, ItemProcess
     @Override
     public final <R, E extends Throwable> void close(RetryContext context, RetryCallback<R, E> callback,
             Throwable throwable) {
-        getLogger().debug("retry - close {}, {}: {}", context, callback, getRootCauseMessage(throwable));
+        getLogger().debug("{}: retry - close {}, {}: {}", getFullName(), context, callback, getRootCauseMessage(throwable));
         doClose(context, callback, throwable);
     }
     protected <R, E extends Throwable> void doClose(RetryContext context, RetryCallback<R, E> callback,
@@ -188,7 +187,7 @@ implements ItemReadListener<I>, ItemWriteListener<O>, RetryListener, ItemProcess
     @Override
     public <R, E extends Throwable> void onError(RetryContext context, RetryCallback<R, E> callback,
             Throwable throwable) {
-        getLogger().error("on retry error: {}", getRootCauseMessage(throwable));
+        getLogger().error("{}: on retry error: {}", getFullName(), getRootCauseMessage(throwable));
         doOnError(context, callback, throwable);
     }
     protected <R, E extends Throwable> void doOnError(RetryContext context, RetryCallback<R, E> callback,
@@ -197,7 +196,7 @@ implements ItemReadListener<I>, ItemWriteListener<O>, RetryListener, ItemProcess
     // LINE CALLBACK HANDLER
     @Override
     public void handleLine(String line) {
-        getLogger().debug("skipping header line: {}", line);
+        getLogger().debug("{}: skipping header line: {}", getFullName(), line);
         doHandleLine(line);
     }
     protected void doHandleLine(String line) {}
@@ -205,14 +204,14 @@ implements ItemReadListener<I>, ItemWriteListener<O>, RetryListener, ItemProcess
     // CHUNK
     @Override
     public final void beforeChunk(ChunkContext context) {
-        getLogger().debug("before chunk: {}", context);
+        getLogger().debug("{}: before chunk: {}", getFullName(), context);
         doBeforeChunk(context);
     }
     protected void doBeforeChunk(ChunkContext context) {}
 
     @Override
     public final void afterChunk(ChunkContext context) {
-        getLogger().debug("after chunk: {}", context);
+        getLogger().debug("{}: after chunk: {}", getFullName(), context);
         doAfterChunk(context);
     }
     protected void doAfterChunk(ChunkContext context) {}
@@ -222,17 +221,25 @@ implements ItemReadListener<I>, ItemWriteListener<O>, RetryListener, ItemProcess
     
     @Override
     public void beforeProcess(I item) {
-        getLogger().debug("before process: {}", item);
+        getLogger().debug("{}: before process: {}", getFullName(), item);
     }
 
     @Override
     public void afterProcess(I item, O result) {
-        getLogger().debug("after process: {} -> {}", item, result);
+        getLogger().debug("{}: after process: {} -> {}", getFullName(), item, result);
     }
 
     @Override
     public void onProcessError(I item, Exception e) {
-        getLogger().debug("on process error ({}): {}", item, getRootCauseMessage(e));
+        getLogger().debug("{}: on process error ({}): {}", getFullName(), item, getRootCauseMessage(e));
+    }
+    
+    // STEP EXECUTION
+    protected final void doBeforeStep(StepExecution stepExecution) {
+        if (skippedItemsProvider != null)
+            skippedItemsProvider.apply(getStepExecutionHolder()).clear();
+        doBeforeEtlStep(stepExecution);
     }
 
+    protected void doBeforeEtlStep(StepExecution stepExecution) {}
 }
