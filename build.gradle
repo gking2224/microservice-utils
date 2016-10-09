@@ -64,6 +64,7 @@ dependencies {
     
     
     // UTILS
+    compile("me.gking2224:gk-utils:0.0.1-SNAPSHOT")
     compile("com.fasterxml.jackson.core:jackson-databind:$jacksonVersion")
     compile group: 'com.jayway.jsonpath', name: 'json-path', version: '2.2.0'
     compile group: 'commons-lang', name: 'commons-lang', version: '2.4'
@@ -71,11 +72,6 @@ dependencies {
     compile group: 'commons-beanutils', name: 'commons-beanutils', version: '1.9.3'
     
     
-    // TEST UTILS (in compile as these will be used by client libraries in _their_ tests)
-    compile group: 'junit', name: 'junit', version: '4.12'
-    compile "org.springframework:spring-test:$springVersion"
-
-            
     // BATCH
     compile("org.springframework.batch:spring-batch-core:$springBatchVersion")
     
