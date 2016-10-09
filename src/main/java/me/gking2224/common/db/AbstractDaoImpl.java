@@ -10,7 +10,6 @@ import java.util.Map;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
-import javax.persistence.FlushModeType;
 import javax.persistence.PersistenceUnit;
 
 import org.slf4j.Logger;
