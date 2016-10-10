@@ -77,6 +77,5 @@ public class EmbeddedDatabaseConfiguration implements InitializingBean {
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        System.out.println("populate embedded db scripts");
     }
 }

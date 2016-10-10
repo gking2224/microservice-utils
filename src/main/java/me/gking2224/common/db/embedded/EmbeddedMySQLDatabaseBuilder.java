@@ -1,5 +1,8 @@
 package me.gking2224.common.db.embedded;
 import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PrintStream;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
@@ -16,6 +19,37 @@ import com.mysql.management.MysqldResource;
 import com.mysql.management.MysqldResourceI;
 
 public class EmbeddedMySQLDatabaseBuilder {
+
+    public static class LoggingOutput extends OutputStream {
+
+        private static final Object sema4 = new Object();
+        
+        private StringBuffer buf = new StringBuffer();
+        private Logger logger;
+        private boolean isErr;
+        
+        public LoggingOutput(final Logger logger, final boolean isErr) {
+            this.logger = logger;
+            this.isErr = isErr;
+        }
+        @Override
+        public void write(int c) throws IOException {
+            buf.append((char)c);
+        }
+        @Override
+        public void flush() {
+            String msg = null;
+            synchronized(sema4) {
+                msg = buf.toString();
+                buf.setLength(0);
+            }
+            if (isErr) logger.error(msg);
+            else logger.debug(msg);
+        }
+        
+
+    }
+
     private static final Logger logger = LoggerFactory.getLogger(EmbeddedMySQLDatabaseBuilder.class);
 
     public static final String DRIVER_CLASS_NAME = "com.mysql.jdbc.Driver";
@@ -73,7 +107,12 @@ public class EmbeddedMySQLDatabaseBuilder {
         Map<String, String> databaseOptions = new HashMap<String, String>();
         databaseOptions.put(MysqldResourceI.PORT, Integer.toString(port));
 
-        MysqldResource MysqldResource = new MysqldResource(new File(baseDatabaseDir, databaseName));
+        File baseDir = new File(baseDatabaseDir, databaseName);
+        File dataDir = new File(baseDir, "data");
+        String version = null;
+        PrintStream out = new PrintStream(new LoggingOutput(logger, false));
+        PrintStream err = new PrintStream(new LoggingOutput(logger, true));
+        MysqldResource MysqldResource = new MysqldResource(baseDir, dataDir, version, out, err);
         MysqldResource.start("embedded-mysql-thread-" + System.currentTimeMillis(), databaseOptions);
 
         if (!MysqldResource.isRunning()) {

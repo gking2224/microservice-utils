@@ -72,6 +72,12 @@ dependencies {
     compile group: 'commons-beanutils', name: 'commons-beanutils', version: '1.9.3'
     
     
+    // AOP
+    compile("org.springframework:spring-aop:${springVersion}")
+    compile("org.aspectj:aspectjrt:1.6.11")
+    compile("org.aspectj:aspectjweaver:1.6.11")
+    
+    
     // BATCH
     compile("org.springframework.batch:spring-batch-core:$springBatchVersion")
     
