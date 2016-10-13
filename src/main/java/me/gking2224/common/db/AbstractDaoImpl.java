@@ -1,5 +1,6 @@
 package me.gking2224.common.db;
 
+import java.io.Serializable;
 import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -17,6 +18,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.jdbc.core.CallableStatementCreator;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -25,13 +27,17 @@ import org.springframework.jdbc.core.SqlParameterValue;
 import org.springframework.jdbc.core.SqlReturnResultSet;
 import org.springframework.jdbc.core.SqlReturnUpdateCount;
 import org.springframework.jdbc.datasource.init.UncategorizedScriptException;
+import org.springframework.transaction.annotation.Transactional;
+
+import me.gking2224.common.db.dao.CrudDao;
 
 /**
  * Abstract DAO class providing convenience access to database functions
  * @author gk
  *
  */
-public class AbstractDaoImpl<T> {
+@Transactional(readOnly=true)
+public abstract class AbstractDaoImpl<T, K extends Serializable> implements CrudDao<T, K> {
 
     private EntityManager entityManager;
 
@@ -90,7 +96,8 @@ public class AbstractDaoImpl<T> {
         logger.debug("fetchComplex: {} with args {}", sproc, args);
         return (E)_call(CallType.FETCH_COMPLEX, sproc, null, callback, args);
     }
-    
+
+    @Transactional(readOnly=false)
     public int update(final String sproc, final Object... args) {
         logger.debug("update: {} with args {}", sproc, args);
         return ((Integer)_call(CallType.UPDATE, sproc, null, null, args)).intValue();
@@ -223,6 +230,33 @@ public class AbstractDaoImpl<T> {
             }
         }
     }
+
+    @Transactional(readOnly=false)
+    public T save(T t) {
+        T saved = getRepository().save(t);
+        return saved;
+    }
+
+    public List<T> findAll() {
+        List<T> tt = getRepository().findAll();
+        return tt;
+    }
+
+    @Transactional(readOnly=false)
+    public T update(T t) {
+        T saved = getRepository().save(t);
+        return saved;
+    }
+
+    @Transactional(readOnly=false)
+    public void delete(K id) {
+        getRepository().delete(id);
+    }
+
+    public T findById(K id) {
+        T t = getRepository().findOne(id);
+        return t;
+    }
     
     protected <E> E getSingleObject(final List<E> list) {
         
@@ -234,4 +268,6 @@ public class AbstractDaoImpl<T> {
         }
         return list.get(0);
     }
+
+    protected abstract JpaRepository<T, K> getRepository();
 }

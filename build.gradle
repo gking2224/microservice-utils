@@ -92,6 +92,7 @@ dependencies {
     compile "mysql:mysql-connector-mxj:5.0.12"
 //    compile "javax.persistence:persistence-api:1.0.2"
     compile("org.springframework:spring-jdbc:$springVersion")
+    compile("org.springframework.data:spring-data-jpa:$springDataVersion")
     compile "org.springframework:spring-orm:$springVersion"
     compile group: 'org.hibernate.javax.persistence', name:'hibernate-jpa-2.1-api', version:'1.0.0.Final'
     
