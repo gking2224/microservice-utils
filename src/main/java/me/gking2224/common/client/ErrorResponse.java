@@ -1,4 +1,4 @@
-package me.gking2224.common.web;
+package me.gking2224.common.client;
 
 public class ErrorResponse {
 

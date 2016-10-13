@@ -1,8 +1,19 @@
 package me.gking2224.common.web;
 
+import java.io.IOException;
+import java.nio.charset.Charset;
+
+import org.apache.commons.io.IOUtils;
+import org.apache.http.client.HttpClient;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.impl.client.cache.CacheConfig;
+import org.apache.http.impl.client.cache.CachingHttpClient;
+import org.apache.http.impl.client.cache.CachingHttpClientBuilder;
 import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ApplicationListener;
@@ -13,9 +24,15 @@ import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.format.FormatterRegistry;
+import org.springframework.http.MediaType;
+import org.springframework.http.client.ClientHttpRequestFactory;
+import org.springframework.http.client.ClientHttpResponse;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.ui.freemarker.FreeMarkerConfigurationFactoryBean;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.util.PathMatcher;
+import org.springframework.web.client.ResponseErrorHandler;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.config.annotation.CorsRegistration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.DefaultServletHandlerConfigurer;
@@ -27,15 +44,23 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 import org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer;
 import org.springframework.web.util.UrlPathHelper;
 
+import me.gking2224.common.client.ErrorResponse;
+import me.gking2224.common.client.ErrorResponseException;
+import me.gking2224.common.utils.ObjectSerializationUtil;
+import me.gking2224.common.utils.ObjectSerializer.ObjectSerializationException;
+
 @ImportResource("classpath:webapp-config.xml")
 @ComponentScan("me.gking2224.common.web")
-public class CommonWebAppConfiguration extends WebMvcConfigurerAdapter implements InitializingBean, ApplicationContextAware {
+public class CommonWebAppConfiguration extends WebMvcConfigurerAdapter implements ApplicationContextAware {
 
     @Autowired
     private WebConfigurationOptions options;
     
     @SuppressWarnings("unused")
     private ApplicationContext applicationContext;
+    
+    @Autowired
+    private ObjectSerializationUtil serializationUtil;
     
     @Bean
     public static PropertySourcesPlaceholderConfigurer propertyConfigurer() {
@@ -111,11 +136,6 @@ public class CommonWebAppConfiguration extends WebMvcConfigurerAdapter implement
 
     @Override
     public void addFormatters(FormatterRegistry registry) {
-//        registry.addConverter(new StringToVersion());
-//        registry.addConverter(new VersionToString());
-//        registry.addConverter(new StringToModelExecutionRequest());
-//        modelObjectConverters.getConverters().stream()
-//            .forEach(b->registry.addConverter((Converter<?,?>)b));
     }
     
     @Override
@@ -126,13 +146,56 @@ public class CommonWebAppConfiguration extends WebMvcConfigurerAdapter implement
         mapping.allowedOrigins(options.getAllowedCorsOrigins());
     }
 
-    @Override
-    public void afterPropertiesSet() throws Exception {
+    @Bean
+    public RestTemplate restTemplate() {
+        CacheConfig cacheConfig = CacheConfig.custom().setMaxCacheEntries(1000).setMaxObjectSize(2048).build();
+        CloseableHttpClient client = CachingHttpClientBuilder.create().setCacheConfig(cacheConfig).build();
+        ClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory(client);
+        RestTemplate rv = new RestTemplate(requestFactory);
+        rv.setErrorHandler(errorHandler());
+        return rv;
+    }
+
+    @Bean
+    public ResponseErrorHandler errorHandler() {
+        
+        ResponseErrorHandler rv = new ResponseErrorHandler() {
+            
+            @Override
+            public boolean hasError(ClientHttpResponse response) throws IOException {
+                return response.getRawStatusCode() != 200;
+            }
+            
+            @Override
+            public void handleError(ClientHttpResponse response) throws IOException {
+                
+                final MediaType mediaType = response.getHeaders().getContentType();
+                String responseBody = IOUtils.toString(response.getBody(), Charset.defaultCharset());
+                try {
+                    throw new ErrorResponseException(
+                            serializationUtil.deserializeToObject(responseBody, mediaType, ErrorResponse.class));
+                }
+                catch (ObjectSerializationException e) {
+                    throw new ErrorResponseException(
+                            new ErrorResponse(response.getStatusCode().value(), response.getStatusText()));
+                }
+            }
+        };
+        return rv;
+    }
+    
+    @Bean
+    public FilterRegistrationBean errorHandlingFilterBean(ErrorHandlingFilter filter) {
+        final FilterRegistrationBean filterRegistrationBean = new FilterRegistrationBean();
+        filterRegistrationBean.setFilter(filter);
+        filterRegistrationBean.setOrder(0);
+        filterRegistrationBean.setEnabled(true);
+        filterRegistrationBean.addUrlPatterns("/*");
+        return filterRegistrationBean;
     }
 
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         this.applicationContext = applicationContext;
     }
-    
 }

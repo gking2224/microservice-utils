@@ -61,6 +61,8 @@ dependencies {
     compile("org.springframework:spring-context-support:$springVersion")
     compile("org.springframework:spring-web:$springVersion")
     compile("org.springframework:spring-webmvc:$springVersion")
+    compile group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.2'
+    compile group: 'org.apache.httpcomponents', name: 'httpclient-cache', version: '4.5.2'
     
     
     // UTILS
@@ -109,64 +111,16 @@ applicationDefaultJvmArgs = [
     "-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=5005"
 ]
 */
-//gretty {
-//    // supported values:
-//    // 'jetty7', 'jetty8', 'jetty9', 'tomcat7', 'tomcat8'
-//    servletContainer = 'tomcat8'
-//    integrationTestTask = 'xxintegrationTest' // name of existing gradle task
-////    extraResourceBase 'dist'
-//}
 
 configurations {
   published
 }
 
-//war {
-//    from envProps.webapp.ng.buildDir
-//    archiveName "${project.name}-${project.version}-${project.env}.war"
-//}
 
-//awsplugin {
-//    region = "eu-west-1"
+//dependencies {
+//    clientlib "org.slf4j:slf4j-api:$slf4jVersion"
+//    clientlib("org.springframework:spring-web:$springVersion")
+//    clientlib group: 'commons-lang', name: 'commons-lang', version: '2.4'
+//    clientlib "javax.servlet:javax.servlet-api:3.1.0"
+//    clientlib("me.gking2224:gk-utils:0.0.1-SNAPSHOT")
 //}
-
-//task createWebServer(type:CreateInstanceTask) {
-//    imageId = {webServerAmi}
-//    instanceType = "t2.micro"
-//    securityGroup = "restricted"
-//    postInitWaitTime = 60
-//}
-//
-//createWebServer << {
-//    project.envProps.webapp.host = publicIpAddress
-//}
-//
-//task deployWar(type:RemoteExec, dependsOn:[war]) {
-//    host = {project.envProps.webapp.host}
-//    keyFileDir = "/Users/gk"
-//    keyFileName = ".awskey"
-//    remoteUser = {project.remoteUser}
-//    timeout = 120
-//    ext.warFileName = {configurations.archives.artifacts.find{it.type=="war"}.file.name}
-//    ext.remoteDir = {"/home/$remoteUser/buildfiles/$runId"}
-//    exec {
-//        cmd = {"mkdir -p $remoteDir"}
-//    }
-//    scp {
-//        fromDir = "$scriptsDir/webapp"
-//        file = "deployWar.sh"
-//        to = {"$remoteDir"}
-//    }
-//    scp {
-//        fromDir = {configurations.archives.artifacts.find{it.type=="war"}.file.parentFile}
-//        file = {warFileName}
-//        to = {"$remoteDir"}
-//        template = false
-//    }
-//    exec {
-//        sudo = true
-//        cmds = [{"chmod 750 $remoteDir/deployWar.sh"}, {"$remoteDir/deployWar.sh"}]
-//    }
-//}
-//task deployWarToNewWebServer(dependsOn:[createWebServer,deployWar])
-//deployWar.mustRunAfter(createWebServer)

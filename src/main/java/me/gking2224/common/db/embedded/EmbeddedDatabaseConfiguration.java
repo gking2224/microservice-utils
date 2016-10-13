@@ -26,8 +26,8 @@ import me.gking2224.common.db.CommonDatabaseConfiguration;
 @ComponentScan({"me.gking2224.common.db"})
 public class EmbeddedDatabaseConfiguration implements InitializingBean {
     
-    @Autowired
-    private EmbeddedDatabaseOptions options;
+    @Autowired(required=false)
+    private EmbeddedDatabaseOptions options = new DefaultEmbeddedDatabaseOptions();
     
     @Bean(name="dataSourceProperties")
     public Properties getDataSourceProperties() throws IOException {
@@ -44,6 +44,8 @@ public class EmbeddedDatabaseConfiguration implements InitializingBean {
         EmbeddedMySQLDatabaseBuilder builder = new EmbeddedMySQLDatabaseBuilder()
             .setPort(Integer.parseInt(getInitProperty(dataSourceProperties, CommonDatabaseConfiguration.PORT_PROPERTY)))
             .addScripts(options.getScripts())
+            .options(options.getDatabaseOptions())
+            .sessionVariables(options.getSessionVariables())
             .setDatabaseName(getInitProperty(dataSourceProperties, CommonDatabaseConfiguration.DATABASE_NAME_PROPERTY));
         
         return builder.build();

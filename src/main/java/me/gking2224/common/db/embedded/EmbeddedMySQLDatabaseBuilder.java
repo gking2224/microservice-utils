@@ -61,6 +61,8 @@ public class EmbeddedMySQLDatabaseBuilder {
     private final String username = "root";
     private boolean foreignKeyCheck = true;
     private boolean persistent = false;
+    private Map<String, String> options = new HashMap<String,String>();
+    private Map<String, String> sessionVariables = new HashMap<String,String>();
 
     private final ResourceLoader resourceLoader;
     private final ResourceDatabasePopulator databasePopulator;
@@ -81,13 +83,18 @@ public class EmbeddedMySQLDatabaseBuilder {
         database.setUsername(username);
         database.setPassword(PASSWORD);
         database.setDatabaseName(databaseName);
-        String url = "jdbc:mysql://localhost:" + port + "/" + databaseName + "?" + "createDatabaseIfNotExist=true";
+        StringBuilder url = new StringBuilder().append("jdbc:mysql://localhost:")
+                .append(port).append("/").append(databaseName).append("?createDatabaseIfNotExist=true");
+        for (Map.Entry<String,String> entry : options.entrySet()) {
+            url.append("&").append(entry.getKey()).append("=").append(entry.getValue());
+        }
 
-        if (!foreignKeyCheck) {
-            url += "&sessionVariables=FOREIGN_KEY_CHECKS=0";
+        url.append("&sessionVariables=").append("FOREIGN_KEY_CHECKS=").append((foreignKeyCheck)?"1":"0");
+        for (Map.Entry<String,String> entry : sessionVariables.entrySet()) {
+            url.append(",").append(entry.getKey()).append("=").append(entry.getValue());
         }
         logger.debug("database url: {}", url);
-        database.setUrl(url);
+        database.setUrl(url.toString());
         database.setPersistent(persistent);
         return database;
     }
@@ -146,6 +153,14 @@ public class EmbeddedMySQLDatabaseBuilder {
     }
     public EmbeddedMySQLDatabaseBuilder persistent() {
         this.persistent = true;
+        return this;
+    }
+    public EmbeddedMySQLDatabaseBuilder options(final Map<String,String> options) {
+        this.options.putAll(options);
+        return this;
+    }
+    public EmbeddedMySQLDatabaseBuilder sessionVariables(final Map<String,String> sessionVariables) {
+        this.sessionVariables.putAll(sessionVariables);
         return this;
     }
 

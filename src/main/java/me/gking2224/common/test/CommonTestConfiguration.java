@@ -9,6 +9,6 @@ import me.gking2224.common.CommonConfiguration;
 @ImportResource("classpath:test-config.xml")
 @TestPropertySource("/test.properties")
 @Import(CommonConfiguration.class)
-public class TestConfiguration {
+public class CommonTestConfiguration {
 
 }

@@ -1,8 +1,7 @@
 package me.gking2224.common.web;
 
-import java.util.HashMap;
-import java.util.Map;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Profile;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -11,43 +10,30 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
+import me.gking2224.common.client.ErrorResponse;
+
 @ControllerAdvice
 @Profile("web")
 public class ControllerExceptionAdvice {
     
-    private Map<Class<? extends Exception>, String> messageMap =
-            new HashMap<Class<? extends Exception>, String>();
-    private Map<Class<? extends Exception>, HttpStatus> httpStatusMap =
-            new HashMap<Class<? extends Exception>, HttpStatus>();
-    
+    @SuppressWarnings("unused")
+    private static Logger logger = LoggerFactory.getLogger(ControllerExceptionAdvice.class);
+
     public ControllerExceptionAdvice() {
-        mapException(DataIntegrityViolationException.class, "Data integrity violation", HttpStatus.CONFLICT);
-        mapException(DataAccessException.class, "Data access error", HttpStatus.INTERNAL_SERVER_ERROR);
-        mapException(Exception.class, "Internal error", HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    @SuppressWarnings("unchecked")
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<ErrorResponse> exceptionHandler(Exception ex) {
-        ex.printStackTrace();
-        ErrorResponse error = new ErrorResponse();
-        HttpStatus httpStatus = null;
-        Class<? extends Exception> clazz = ex.getClass();
-        while (!httpStatusMap.containsKey(clazz)) {
-            clazz = (Class<? extends Exception>) clazz.getSuperclass();
-        }
-        httpStatus = httpStatusMap.get(clazz);
-        if (httpStatus == null) {
-            httpStatus = HttpStatus.I_AM_A_TEAPOT; // this should not happen!
-        }
-        error.setErrorCode(httpStatus.value());
-        error.setErrorMessage(messageMap.get(clazz));
-        return new ResponseEntity<ErrorResponse>(error, httpStatus);
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<ErrorResponse> exceptionHandler(DataIntegrityViolationException ex) throws Exception {
+        return errorResponse(HttpStatus.CONFLICT, "Data integrity violation");
     }
 
-    private void mapException(Class<? extends Exception> ex, String msg,
-            HttpStatus httpStatus) {
-        messageMap.put(ex, msg);
-        httpStatusMap.put(ex, httpStatus);
+    @ExceptionHandler(DataAccessException.class)
+    public ResponseEntity<ErrorResponse> exceptionHandler(DataAccessException ex) throws Exception {
+        return errorResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Data integrity violation");
+    }
+
+    private ResponseEntity<ErrorResponse> errorResponse(final HttpStatus status, final String description) {
+    
+        return new ResponseEntity<ErrorResponse>(new ErrorResponse(status.value(), description), status);
     }
 }

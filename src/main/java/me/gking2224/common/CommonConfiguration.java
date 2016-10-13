@@ -8,6 +8,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 
+import me.gking2224.common.utils.JsonUtil;
+
 @ComponentScan("me.gking2224.common.utils")
 public class CommonConfiguration {
 
@@ -47,5 +49,9 @@ public class CommonConfiguration {
 
     @Bean(name="filenameDateFormat") DateTimeFormatter filenameDateFormatter() {
         return DateTimeFormatter.ofPattern("yyyyMMdd");
+    }
+    
+    @Bean public JsonUtil jsonUtil() {
+        return new JsonUtil();
     }
 }
