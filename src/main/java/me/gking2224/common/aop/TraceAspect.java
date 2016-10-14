@@ -39,7 +39,7 @@ public class TraceAspect {
         }
         catch (Throwable t) {
             Throwable rootCause = t.getCause() == null ? t : ExceptionUtils.getRootCause(t);
-            logger.trace(String.format("<!!-- %s - threw %s: %s", signature, rootCause, rootCause.getMessage()));
+            logger.trace(String.format("<!!-- %s - threw %s (root cause = %s)", signature, t, rootCause));
             throw t;
         }
     }

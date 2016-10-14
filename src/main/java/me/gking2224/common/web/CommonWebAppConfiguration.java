@@ -10,6 +10,7 @@ import org.apache.http.impl.client.cache.CachingHttpClientBuilder;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
+import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ApplicationListener;
@@ -29,6 +30,7 @@ import org.springframework.util.AntPathMatcher;
 import org.springframework.util.PathMatcher;
 import org.springframework.web.client.ResponseErrorHandler;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.config.annotation.CorsRegistration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.DefaultServletHandlerConfigurer;
@@ -52,7 +54,6 @@ public class CommonWebAppConfiguration extends WebMvcConfigurerAdapter implement
     @Autowired
     private WebConfigurationOptions options;
     
-    @SuppressWarnings("unused")
     private ApplicationContext applicationContext;
     
     @Autowired
@@ -111,11 +112,6 @@ public class CommonWebAppConfiguration extends WebMvcConfigurerAdapter implement
             .setUseRegisteredSuffixPatternMatch(true)
             .setPathMatcher(antPathMatcher())
             .setUrlPathHelper(urlPathHelper());
-    }
-    
-    @Override
-    public void configureDefaultServletHandling(DefaultServletHandlerConfigurer configurer) {
-        configurer.enable();
     }
 
     @Bean
@@ -188,6 +184,19 @@ public class CommonWebAppConfiguration extends WebMvcConfigurerAdapter implement
         filterRegistrationBean.setEnabled(true);
         filterRegistrationBean.addUrlPatterns("/*");
         return filterRegistrationBean;
+    }
+    @Override
+    public void configureDefaultServletHandling(DefaultServletHandlerConfigurer configurer){
+      configurer.enable();
+    }
+
+    @Bean
+    public ServletRegistrationBean foo() {
+        DispatcherServlet dispatcherServlet = new DispatcherServlet();   
+        dispatcherServlet.setApplicationContext(applicationContext);
+        ServletRegistrationBean servletRegistrationBean = new ServletRegistrationBean(dispatcherServlet, "/*");
+        servletRegistrationBean.setName("dispatcher");
+        return servletRegistrationBean;
     }
 
     @Override

@@ -39,6 +39,7 @@ public class ErrorHandlingFilter extends GenericFilterBean {
             return;
         }
         catch (Throwable t) {
+            logger.error(t.getMessage(), t);
             if (!response.isCommitted()) {
                 errorWriter.writeError((HttpServletRequest)request, (HttpServletResponse)response, t);
             }
