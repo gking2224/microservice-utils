@@ -133,8 +133,7 @@ public class CommonWebAppConfiguration extends WebMvcConfigurerAdapter implement
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         CorsRegistration mapping = registry.addMapping("/**");
-        mapping
-            .allowedMethods("PUT", "DELETE", "POST", "GET");
+        mapping.allowedMethods(options.getAllowedCorsMethods());
         mapping.allowedOrigins(options.getAllowedCorsOrigins());
     }
 

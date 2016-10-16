@@ -5,11 +5,9 @@ import java.util.List;
 
 public interface CrudDao<T, K extends Serializable> {
 
-    T save(T thing);
+    T save(T t);
 
     List<T> findAll();
-
-    T update(T thing);
 
     void delete(K id);
 

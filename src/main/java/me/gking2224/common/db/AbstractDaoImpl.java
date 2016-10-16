@@ -231,28 +231,26 @@ public abstract class AbstractDaoImpl<T, K extends Serializable> implements Crud
         }
     }
 
-    @Transactional(readOnly=false)
-    public T save(T t) {
-        T saved = getRepository().save(t);
-        return saved;
-    }
-
+    @Override
     public List<T> findAll() {
         List<T> tt = getRepository().findAll();
         return tt;
     }
 
     @Transactional(readOnly=false)
-    public T update(T t) {
+    @Override
+    public T save(T t) {
         T saved = getRepository().save(t);
         return saved;
     }
 
+    @Override
     @Transactional(readOnly=false)
     public void delete(K id) {
         getRepository().delete(id);
     }
 
+    @Override
     public T findById(K id) {
         T t = getRepository().findOne(id);
         return t;
