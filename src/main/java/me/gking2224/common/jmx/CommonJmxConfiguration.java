@@ -19,6 +19,7 @@ import org.springframework.jmx.export.naming.ObjectNamingStrategy;
 public class CommonJmxConfiguration implements ApplicationContextAware {
 
     private AnnotationJmxAttributeSource annotationJmxAttributeSource;
+    
     @SuppressWarnings("unused")
     private ApplicationContext applicationContext;
 

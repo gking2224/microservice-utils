@@ -25,6 +25,7 @@ ext {
       springVersion = "4.3.1.RELEASE"
       springDataVersion = "1.10.2.RELEASE"
       springBootVersion = "1.4.1.RELEASE"
+      springJmsVersion = "4.3.3.RELEASE"
       springBatchVersion = "3.0.7.RELEASE"
       jacksonVersion = "2.8.0"
       freemarkerVersion = "2.3.23"
@@ -95,6 +96,13 @@ dependencies {
     compile("org.springframework.data:spring-data-jpa:$springDataVersion")
     compile "org.springframework:spring-orm:$springVersion"
     compile group: 'org.hibernate.javax.persistence', name:'hibernate-jpa-2.1-api', version:'1.0.0.Final'
+    
+    
+    // MESSAGING
+    compile group: 'org.springframework', name: 'spring-jms', version: springJmsVersion
+    compile("org.apache.activemq:activemq-core:5.7.0")
+//    compile group: 'org.apache.activemq', name: 'activemq-jdbc-store', version: '5.9.0'
+//    runtime group: "org.apache.activemq", name: "activemq-kahadb-store", version: "5.13.4"
     
 
 }
