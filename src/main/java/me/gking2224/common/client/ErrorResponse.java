@@ -1,31 +1,40 @@
 package me.gking2224.common.client;
 
+import org.springframework.http.HttpStatus;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 public class ErrorResponse {
 
-    protected int errorCode;
+    protected HttpStatus status;
     protected String errorMessage;
 
-    public ErrorResponse(final int errorCode, final String errorMessage) {
-        this.errorCode = errorCode;
+    public ErrorResponse(final HttpStatus status, final String errorMessage) {
+        this.status = status;
         this.errorMessage = errorMessage;
     }
 
     public ErrorResponse() {
     }
 
+    public void setErrorMessage(String errorMessage) {
+        this.errorMessage = errorMessage;
+    }
+
     public int getErrorCode() {
-        return errorCode;
+        return status.value();
+    }
+
+    public void setErrorCode(int code) {
+        this.status = HttpStatus.valueOf(code);
     }
 
     public String getErrorMessage() {
         return errorMessage;
     }
 
-    public void setErrorCode(final int errorCode) {
-        this.errorCode = errorCode;
-    }
-
-    public void setErrorMessage(final String errorMessage) {
-        this.errorMessage = errorMessage;
+    @JsonIgnore
+    public HttpStatus getStatus() {
+        return status;
     }
 }

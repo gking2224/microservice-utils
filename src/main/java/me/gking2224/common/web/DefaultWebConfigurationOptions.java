@@ -1,27 +1,26 @@
 package me.gking2224.common.web;
 
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.PropertySource;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import me.gking2224.common.client.MicroServiceEnvironment;
+
 @Component
-@PropertySource("/security.properties")
 public class DefaultWebConfigurationOptions implements WebConfigurationOptions {
     
-    @Value("${allowedCorsOrigins}")
-    private String[] allowedCorsOrigins;
+    private static final String[] DEFAULT_CORS_ALLOWED_ORIGINS = new String[0];
+    private static final String[] DEFAULT_CORS_ALLOWED_METHODS = new String[] {"GET", "OPTIONS"};
     
-    @Value("${allowedCorsMethods}")
-    private String[] allowedCorsMethods;
+    @Autowired MicroServiceEnvironment env;
 
     @Override
     public String[] getAllowedCorsOrigins() {
-        return allowedCorsOrigins;
+        return env.getProperty("security.cors.allowedOrigins", String[].class, DEFAULT_CORS_ALLOWED_ORIGINS);
     }
 
     @Override
     public String[] getAllowedCorsMethods() {
-        return allowedCorsMethods;
+        return env.getProperty("security.cors.allowedOrigins", String[].class, DEFAULT_CORS_ALLOWED_METHODS);
     }
     
 }

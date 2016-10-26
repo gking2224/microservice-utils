@@ -1,4 +1,4 @@
-package me.gking2224.common.web;
+package me.gking2224.common.client;
 
 import java.io.IOException;
 import java.util.List;
@@ -6,20 +6,21 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.lang.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.accept.ContentNegotiationManager;
 import org.springframework.web.context.request.ServletWebRequest;
 
-import me.gking2224.common.client.ErrorResponse;
+import me.gking2224.common.utils.ExceptionUtils;
 import me.gking2224.common.utils.ObjectSerializationUtil;
 
 @Component
+@Profile("web")
 public class ResponseErrorWriter {
 
     private static Logger logger = LoggerFactory.getLogger(ResponseErrorWriter.class);
@@ -34,23 +35,22 @@ public class ResponseErrorWriter {
             final HttpServletRequest request, final HttpServletResponse response,
             final HttpStatus status, final String errorMessage)
             throws IOException {
-        writeError(request, response, status.value(), errorMessage);
+        writeError(request, response, new ErrorResponse(status, errorMessage));
     }
     
     public void writeError(
             final HttpServletRequest request, final HttpServletResponse response, final Throwable t)
             throws IOException {
         Throwable rootCause = ExceptionUtils.getRootCause(t);
+        ErrorResponse e = null;
         if (rootCause == null) rootCause = t;
-        String msg = String.format("%s: %s", rootCause.getClass().getName(), rootCause.getMessage());
-        writeError(request, response, new ErrorResponse(500, msg));
-    }
-    
-    public void writeError(
-            final HttpServletRequest request, final HttpServletResponse response,
-            final int status, final String errorMessage)
-                    throws IOException {
-        writeError(request, response, new ErrorResponse(status, errorMessage));
+        if (ErrorResponseException.class.isAssignableFrom(t.getClass())) {
+            e = ((ErrorResponseException)t).getResponse();
+        }
+        else {
+            e = new ErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, rootCause.getMessage());
+        }
+        writeError(request, response, e);
     }
     
     public void writeError(final HttpServletRequest request, final HttpServletResponse response, final ErrorResponse e)

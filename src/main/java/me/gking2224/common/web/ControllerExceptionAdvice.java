@@ -34,6 +34,6 @@ public class ControllerExceptionAdvice {
 
     private ResponseEntity<ErrorResponse> errorResponse(final HttpStatus status, final String description) {
     
-        return new ResponseEntity<ErrorResponse>(new ErrorResponse(status.value(), description), status);
+        return new ResponseEntity<ErrorResponse>(new ErrorResponse(status, description), status);
     }
 }

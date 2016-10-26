@@ -1,6 +1,5 @@
 package me.gking2224.common.aop;
 
-import org.apache.commons.lang.exception.ExceptionUtils;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.Signature;
 import org.aspectj.lang.annotation.Around;
@@ -9,6 +8,8 @@ import org.aspectj.lang.annotation.Pointcut;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
+
+import me.gking2224.common.utils.ExceptionUtils;
 
 @Aspect
 @Component

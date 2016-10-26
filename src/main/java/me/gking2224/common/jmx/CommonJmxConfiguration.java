@@ -18,6 +18,8 @@ import org.springframework.jmx.export.naming.ObjectNamingStrategy;
 @Profile("jmx")
 public class CommonJmxConfiguration implements ApplicationContextAware {
 
+    public static final String JMX_MBEAN_GROUP_NAME_PREFIX = "MicroService:name=";
+    
     private AnnotationJmxAttributeSource annotationJmxAttributeSource;
     
     @SuppressWarnings("unused")

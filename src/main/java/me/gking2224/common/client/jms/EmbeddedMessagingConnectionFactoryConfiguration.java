@@ -1,4 +1,4 @@
-package me.gking2224.common.jms;
+package me.gking2224.common.client.jms;
 
 import javax.jms.ConnectionFactory;
 
@@ -6,7 +6,7 @@ import org.apache.activemq.ActiveMQConnectionFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Profile;
 
-@Profile("embedded")
+@Profile("embeddedjms")
 public class EmbeddedMessagingConnectionFactoryConfiguration {
     
     @Bean("mqConnectionFactory") ConnectionFactory targetConnectionFactory() {

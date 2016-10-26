@@ -4,18 +4,17 @@ import java.io.File;
 import java.util.Set;
 
 import org.springframework.context.support.GenericApplicationContext;
-import org.springframework.web.context.support.StandardServletEnvironment;
+import org.springframework.core.env.StandardEnvironment;
 
 import me.gking2224.common.cli.CommandLineHelper.CommandLine;
 import me.gking2224.common.client.MicroServiceEnvironment;
+import me.gking2224.common.client.PropertiesPropertySource;
 
-public class ConfigurableWebEnvironmentImplementation
-extends StandardServletEnvironment
-implements MicroServiceEnvironment {
+public class ConfigurableEnvironmentImplementation extends StandardEnvironment implements MicroServiceEnvironment {
 
     private MicroServiceEnvironmentDelegate delegate;
 
-    public ConfigurableWebEnvironmentImplementation(final CommandLine cl, final String appPrefix) {
+    public ConfigurableEnvironmentImplementation(final CommandLine cl, final String appPrefix) {
         this.delegate = new MicroServiceEnvironmentDelegate(cl, appPrefix);
         super.setActiveProfiles(delegate.getActiveProfiles(cl));
     }
@@ -36,7 +35,7 @@ implements MicroServiceEnvironment {
     }
 
     @Override
-    public void addEnvironmentProperties(me.gking2224.common.client.PropertiesPropertySource propertySource) {
+    public void addEnvironmentProperties(PropertiesPropertySource propertySource) {
         delegate.addEnvironmentProperties(propertySource);
     }
 

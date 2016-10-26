@@ -58,6 +58,7 @@ dependencies {
     
     
     // WEB
+    compile("org.springframework.boot:spring-boot-starter-web:$springBootVersion")
     compile "javax.servlet:javax.servlet-api:3.1.0"
     compile("org.springframework:spring-context-support:$springVersion")
     compile("org.springframework:spring-web:$springVersion")
@@ -67,12 +68,15 @@ dependencies {
     
     
     // UTILS
+    compile group: 'commons-cli', name: 'commons-cli', version: '1.3.1'
     compile("me.gking2224:gk-utils:0.0.1-SNAPSHOT")
     compile("com.fasterxml.jackson.core:jackson-databind:$jacksonVersion")
+    compile("com.fasterxml.jackson.dataformat:jackson-dataformat-xml:$jacksonVersion")
     compile group: 'com.jayway.jsonpath', name: 'json-path', version: '2.2.0'
     compile group: 'commons-lang', name: 'commons-lang', version: '2.4'
     compile group: 'commons-io', name: 'commons-io', version: '2.5'
     compile group: 'commons-beanutils', name: 'commons-beanutils', version: '1.9.3'
+    compile group: 'org.reflections', name: 'reflections', version: '0.9.10'
     
     
     // AOP
@@ -101,6 +105,8 @@ dependencies {
     // MESSAGING
     compile group: 'org.springframework', name: 'spring-jms', version: springJmsVersion
     compile("org.apache.activemq:activemq-core:5.7.0")
+    compile "org.apache.tomcat.embed:tomcat-embed-core:8.5.5"
+    compile "org.apache.tomcat:tomcat-catalina-ha:8.5.5"
 //    compile group: 'org.apache.activemq', name: 'activemq-jdbc-store', version: '5.9.0'
 //    runtime group: "org.apache.activemq", name: "activemq-kahadb-store", version: "5.13.4"
     
@@ -120,16 +126,20 @@ applicationDefaultJvmArgs = [
     "-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=5005"
 ]
 */
+dependencies {
+    clientlib "org.springframework:spring-web:$springVersion"
+    clientlib("com.fasterxml.jackson.core:jackson-databind:$jacksonVersion")
+    clientlib group: 'org.springframework', name: 'spring-jms', version: springJmsVersion
+    clientlib("org.apache.activemq:activemq-core:5.7.0")
+}
 
 configurations {
   published
 }
 
 
-//dependencies {
-//    clientlib "org.slf4j:slf4j-api:$slf4jVersion"
-//    clientlib("org.springframework:spring-web:$springVersion")
-//    clientlib group: 'commons-lang', name: 'commons-lang', version: '2.4'
-//    clientlib "javax.servlet:javax.servlet-api:3.1.0"
-//    clientlib("me.gking2224:gk-utils:0.0.1-SNAPSHOT")
-//}
+dependencies {
+    clientlib("me.gking2224:gk-utils:0.0.1-SNAPSHOT")
+    clientlib group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.2'
+    clientlib group: 'org.apache.httpcomponents', name: 'httpclient-cache', version: '4.5.2'
+}

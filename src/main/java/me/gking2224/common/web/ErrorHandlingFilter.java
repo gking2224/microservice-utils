@@ -14,6 +14,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.GenericFilterBean;
 
 import me.gking2224.common.client.ErrorResponseException;
+import me.gking2224.common.client.ResponseErrorWriter;
 
 @Component
 public class ErrorHandlingFilter extends GenericFilterBean {

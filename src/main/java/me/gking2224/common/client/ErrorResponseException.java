@@ -1,5 +1,7 @@
 package me.gking2224.common.client;
 
+import org.springframework.http.HttpStatus;
+
 public class ErrorResponseException extends RuntimeException {
 
     /**
@@ -14,8 +16,8 @@ public class ErrorResponseException extends RuntimeException {
         this.response = response;
     }
 
-    public ErrorResponseException(int errorCode, String message) {
-        this(new ErrorResponse(errorCode, message));
+    public ErrorResponseException(final HttpStatus status, String message) {
+        this(new ErrorResponse(status, message));
     }
 
     public ErrorResponse getResponse() {

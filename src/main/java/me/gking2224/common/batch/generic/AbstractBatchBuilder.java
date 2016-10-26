@@ -36,7 +36,7 @@ public abstract class AbstractBatchBuilder {
     }
 
     protected File getBatchFilesDir() {
-        return new File(properties.getProperty("baseDir"));
+        return new File(properties.getProperty("batch.baseDir"));
     }
 
     protected final StepBuilderFactory getSteps() {

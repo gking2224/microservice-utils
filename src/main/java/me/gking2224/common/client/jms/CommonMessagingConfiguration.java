@@ -1,4 +1,4 @@
-package me.gking2224.common.jms;
+package me.gking2224.common.client.jms;
 
 import javax.jms.ConnectionFactory;
 import javax.jms.Topic;
@@ -20,14 +20,22 @@ import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.support.destination.BeanFactoryDestinationResolver;
 import org.springframework.jms.support.destination.DestinationResolver;
 
+import me.gking2224.common.client.EnvironmentProperties;
+import me.gking2224.common.client.MicroServiceEnvironment;
+
+//import me.gking2224.common.EnvironmentProperties;
+
 @ComponentScan("me.gking2224.common.jms")
 @Import({MessagingConnectionFactoryConfiguration.class, EmbeddedMessagingConnectionFactoryConfiguration.class})
 @EnableJms
+@EnvironmentProperties(value="props:/jms.properties", name="common-jms", prefix="jms")
 public class CommonMessagingConfiguration implements ApplicationContextAware {
 
     public static final String QUEUE_LISTENER_CONTAINER_FACTORY = "queueListenerContainerFactory";
 
     public static final String TOPIC_LISTENER_CONTAINER_FACTORY = "topicListenerContainerFactory";
+
+    private static final String DEFAULT_SYSTEM_EVENTS_QUEUE = "SystemEvents";
     
     private ApplicationContext applicationContext;
 
@@ -35,8 +43,9 @@ public class CommonMessagingConfiguration implements ApplicationContextAware {
      * Standard topic for system events
      * @return
      */
-    @Bean("SystemEvents") Topic systemEventsTopic() {
-        return new ActiveMQTopic("SystemEvents");
+    @Bean("SystemEvents") Topic systemEventsTopic(MicroServiceEnvironment env) {
+        String qn = env.getProperty("jms.systemEventsQueue", DEFAULT_SYSTEM_EVENTS_QUEUE);
+        return new ActiveMQTopic(qn);
     }
 
     @Bean
