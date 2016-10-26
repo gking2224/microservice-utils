@@ -55,7 +55,6 @@ public class RetryPolicyBuilderTest {
         
         RetryPolicy iPolicy = new RetryPolicyBuilder().properties(batchProperties).build();
         assertNotNull(iPolicy);
-        assertTrue(FixedTimeRetryPolicy.class.isAssignableFrom(iPolicy.getClass()));
     }
 
 }
