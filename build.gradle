@@ -73,7 +73,7 @@ dependencies {
     
     // UTILS
     compile group: 'commons-cli', name: 'commons-cli', version: '1.3.1'
-    compile("me.gking2224:gk-utils:0.0.1-SNAPSHOT")
+    compile("me.gking2224:gk-utils:0.0.2")
     compile("com.fasterxml.jackson.core:jackson-databind:$jacksonVersion")
     compile("com.fasterxml.jackson.dataformat:jackson-dataformat-xml:$jacksonVersion")
     compile group: 'com.jayway.jsonpath', name: 'json-path', version: '2.2.0'
