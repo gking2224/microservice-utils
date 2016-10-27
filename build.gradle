@@ -143,7 +143,7 @@ configurations {
 
 
 dependencies {
-    clientlib("me.gking2224:gk-utils:0.0.1")
+    clientlib("me.gking2224:gk-utils:0.0.2")
     clientlib group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.2'
     clientlib group: 'org.apache.httpcomponents', name: 'httpclient-cache', version: '4.5.2'
 }
