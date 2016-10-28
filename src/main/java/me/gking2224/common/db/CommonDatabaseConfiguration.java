@@ -26,10 +26,10 @@ public class CommonDatabaseConfiguration {
     
     @Autowired MicroServiceEnvironment env;
 
-    public static final String DRIVER_PROPERTY = "db.jdbc.driverClassName";
-    public static final String USERNAME_PROPERTY = "db.jdbc.username";
-    public static final String PASSWORD_PROPERTY = "db.jdbc.password";
-    public static final String URL_PROPERTY = "db.jdbc.url";
+    public static final String DRIVER_PROPERTY = "db.database.driver";
+    public static final String USERNAME_PROPERTY = "db.database.username";
+    public static final String PASSWORD_PROPERTY = "db.database.password";
+    public static final String URL_PROPERTY = "db.database.url";
 
     @Autowired @Qualifier("common-db") Properties dbProperties;
     
