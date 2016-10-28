@@ -22,7 +22,9 @@ import org.springframework.util.StringUtils;
 
 import me.gking2224.common.client.EnvironmentProperties;
 import me.gking2224.common.client.MicroServiceEnvironment;
+import me.gking2224.common.client.PropertiesPropertySource;
 import me.gking2224.common.utils.NestedProperties;
+import me.gking2224.common.utils.PrefixedProperties;
 
 public class EnvironmentExtender {
 
@@ -76,8 +78,7 @@ public class EnvironmentExtender {
             Properties fallback = getNestedProperties(locationToUse, null, null);
             Properties p = getNestedProperties(locationToUse, this.env.getAppPrefix(), fallback);
             if (p == null) p = fallback;
-            me.gking2224.common.client.PropertiesPropertySource propertySource = new PrefixedPropertiesPropertySource(
-                    prefixToUse, nameToUse, p);
+            PropertiesPropertySource propertySource = new PropertiesPropertySource(nameToUse, new PrefixedProperties(prefixToUse, p));
             this.env.addEnvironmentProperties(propertySource);
             if (ConfigurableEnvironment.class.isAssignableFrom(this.env.getClass())) {
                 ((ConfigurableEnvironment)this.env).getPropertySources().addLast(propertySource);

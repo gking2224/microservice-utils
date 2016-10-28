@@ -3,14 +3,16 @@ package me.gking2224.common;
 import java.util.Properties;
 
 import me.gking2224.common.client.PropertiesPropertySource;
+import me.gking2224.common.utils.PrefixedProperties;
 
 public class PrefixedPropertiesPropertySource extends PropertiesPropertySource {
 
     private String prefix;
 
     public PrefixedPropertiesPropertySource(String prefix, String name, Properties source) {
-        super(name, source);
-        this.prefix = prefix;
+//        super(name, source);
+//        this.prefix = prefix;
+        super(name, new PrefixedProperties(prefix, source));
     }
     
     @Override

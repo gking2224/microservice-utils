@@ -73,7 +73,7 @@ dependencies {
     
     // UTILS
     compile group: 'commons-cli', name: 'commons-cli', version: '1.3.1'
-    compile("me.gking2224:gk-utils:0.0.3")
+    compile("me.gking2224:gk-utils:0.0.4")
     compile("com.fasterxml.jackson.core:jackson-databind:$jacksonVersion")
     compile("com.fasterxml.jackson.dataformat:jackson-dataformat-xml:$jacksonVersion")
     compile group: 'com.jayway.jsonpath', name: 'json-path', version: '2.2.0'
@@ -142,7 +142,7 @@ configurations {
 }
 
 dependencies {
-    clientlib("me.gking2224:gk-utils:0.0.3")
+    clientlib("me.gking2224:gk-utils:0.0.4")
     clientlib group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.2'
     clientlib group: 'org.apache.httpcomponents', name: 'httpclient-cache', version: '4.5.2'
 }
