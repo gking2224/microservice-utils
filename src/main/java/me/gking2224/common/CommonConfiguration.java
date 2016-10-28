@@ -17,13 +17,13 @@ import me.gking2224.common.client.EnvironmentProperties;
 import me.gking2224.common.client.MicroServiceEnvironment;
 import me.gking2224.common.client.jms.CommonMessagingConfiguration;
 import me.gking2224.common.db.CommonDatabaseConfiguration;
+import me.gking2224.common.db.embedded.CommonEmbeddedDatabaseConfiguration;
 import me.gking2224.common.jmx.CommonJmxConfiguration;
 import me.gking2224.common.utils.JsonUtil;
 import me.gking2224.common.web.CommonWebAppConfiguration;
 
-@ComponentScan({"me.gking2224.common.utils", "me.gking2224.common.client"})
 @Import({
-    CommonDatabaseConfiguration.class,
+    CommonDatabaseConfiguration.class, CommonEmbeddedDatabaseConfiguration.class,
     CommonBatchConfiguration.class,
     CommonJmxConfiguration.class,
     CommonWebAppConfiguration.class,
@@ -31,6 +31,7 @@ import me.gking2224.common.web.CommonWebAppConfiguration;
     CommonMessagingConfiguration.class,
     CommonAopConfiguration.class
 })
+@ComponentScan({"me.gking2224.common.utils", "me.gking2224.common.client"})
 @EnvironmentProperties(value="props:/environment.properties", prefix="env", name="common-env")
 public class CommonConfiguration {
 

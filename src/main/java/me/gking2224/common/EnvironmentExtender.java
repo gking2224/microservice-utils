@@ -25,6 +25,8 @@ import me.gking2224.common.client.MicroServiceEnvironment;
 import me.gking2224.common.utils.NestedProperties;
 
 public class EnvironmentExtender {
+
+    private static final String PROPS_DIR_PROPERTY = "PROPS_DIR";
     
     private DefaultResourceLoader resourceLoader =  new DefaultResourceLoader();
     private MicroServiceEnvironment env;
@@ -143,6 +145,7 @@ public class EnvironmentExtender {
         final String FILE_PREFIX = "file://";
         final String PROPS_PREFIX = "props:";
         final String SLASH = "/";
+        private String propsDir;
         @Override
         public Resource resolve(String location, ResourceLoader resourceLoader) {
             if (location.startsWith(PROPS_PREFIX)) {
@@ -161,21 +164,19 @@ public class EnvironmentExtender {
         }
         
         private String getPropsDir() throws FileNotFoundException {
-            File dir = env.getPropsDir();
-            if (dir != null) return dir.getAbsolutePath();
-            String propsDir = env.getProperty("PROPS_DIR");
             if (propsDir == null) {
-                propsDir = env.getProperty("PropsDir");
-            }
-            if (propsDir == null) {
-                propsDir = env.getProperty("user.home")+"/properties";
-            }
-            dir= new File(propsDir);
-            if (!dir.exists()) {
-                throw new FileNotFoundException(format("Properties directory %s does not exist", propsDir));
-            }
-            else if (!dir.isDirectory()) {
-                throw new FileNotFoundException(format("Properties directory %s is not a directory", propsDir));
+                propsDir = env.getProperty(PROPS_DIR_PROPERTY);
+                if (propsDir == null) {
+                    propsDir = env.getRequiredProperty("user.home")+"/properties";
+                }
+                File dir = new File(propsDir);
+                if (!dir.exists()) {
+                    throw new FileNotFoundException(format("Properties directory %s does not exist", propsDir));
+                }
+                else if (!dir.isDirectory()) {
+                    throw new FileNotFoundException(format("Properties directory %s is not a directory", propsDir));
+                }
+                propsDir = dir.getAbsolutePath();
             }
             return FILE_PREFIX + propsDir;
         }

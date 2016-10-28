@@ -1,12 +1,10 @@
 package me.gking2224.common.web;
 
-import java.io.File;
 import java.util.Set;
 
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.web.context.support.StandardServletEnvironment;
 
-import me.gking2224.common.cli.CommandLineHelper.CommandLine;
 import me.gking2224.common.client.MicroServiceEnvironment;
 
 public class ConfigurableWebEnvironmentImplementation
@@ -15,9 +13,9 @@ implements MicroServiceEnvironment {
 
     private MicroServiceEnvironmentDelegate delegate;
 
-    public ConfigurableWebEnvironmentImplementation(final CommandLine cl, final String appPrefix) {
-        this.delegate = new MicroServiceEnvironmentDelegate(cl, appPrefix);
-        super.setActiveProfiles(delegate.getActiveProfiles(cl));
+    public ConfigurableWebEnvironmentImplementation(final String appPrefix, final String env, final Set<String> apps) {
+        this.delegate = new MicroServiceEnvironmentDelegate(appPrefix, env, apps);
+        super.setActiveProfiles(delegate.getActiveProfiles());
     }
     
     @Override
@@ -43,10 +41,5 @@ implements MicroServiceEnvironment {
     @Override
     public String getAppPrefix() {
         return delegate.getAppPrefix();
-    }
-
-    @Override
-    public File getPropsDir() {
-        return delegate.getPropsDir();
     }
 }

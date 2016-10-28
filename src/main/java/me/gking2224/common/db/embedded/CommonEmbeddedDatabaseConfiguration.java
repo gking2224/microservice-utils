@@ -27,19 +27,17 @@ import me.gking2224.common.db.CommonDatabaseConfiguration;
 @EnvironmentProperties(value="props:/db.properties", prefix="db", name="embedded-db")
 public class CommonEmbeddedDatabaseConfiguration implements InitializingBean {
     
-    private static final String PORT_PROPERTY = "db.port";
+    private static final String PORT_PROPERTY = "db.jdbc.port";
     
-    private static final String DATABASE_NAME_PROPERTY = "db.databaseName";
+    private static final String DATABASE_NAME_PROPERTY = "db.database.name";
     
     @Autowired MicroServiceEnvironment env;
     
     @Autowired(required=false)
     private EmbeddedDatabaseOptions options = new DefaultEmbeddedDatabaseOptions();
 
-    @Autowired @Qualifier("embedded-db") Properties dbProperties;
-    
     @Bean(name="embeddedDbProperties")
-    public Properties getEmbeddedDatabaseProperties(Properties dbProperties) throws IOException {
+    public Properties getEmbeddedDatabaseProperties(@Qualifier("embedded-db") Properties dbProperties) throws IOException {
         
         Properties dsProps = new Properties(dbProperties);
         dsProps.setProperty(CommonDatabaseConfiguration.USERNAME_PROPERTY, "root");

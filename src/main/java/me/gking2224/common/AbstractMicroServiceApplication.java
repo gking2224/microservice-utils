@@ -36,9 +36,9 @@ implements ApplicationContextInitializer<GenericApplicationContext>{
     protected static ConfigurableEnvironment buildEnvironment(CommandLine cl, String appPrefix) {
         MicroServiceEnvironment env = null;
         if (cl.getApps().contains(APP_WEB)) {
-            env = new ConfigurableWebEnvironmentImplementation(cl, appPrefix);
+            env = new ConfigurableWebEnvironmentImplementation(appPrefix, cl.getEnv(), cl.getApps());
         }
-        else env = new ConfigurableEnvironmentImplementation(cl, appPrefix);
+        else env = new ConfigurableEnvironmentImplementation(appPrefix, cl.getEnv(), cl.getApps());
         
         new EnvironmentExtender(env).extendEnvironmentWithAnnotatedProperties("me.gking2224");
         return env;

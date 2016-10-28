@@ -1,6 +1,5 @@
 package me.gking2224.common.client;
 
-import java.io.File;
 import java.util.Set;
 
 import org.springframework.context.support.GenericApplicationContext;
@@ -17,6 +16,4 @@ public interface MicroServiceEnvironment extends ConfigurableEnvironment {
     String getEnv();
 
     Set<String> getApps();
-    
-    File getPropsDir();
 }
