@@ -19,6 +19,8 @@ public class MessagingConnectionFactoryConfiguration {
         int port = env.getProperty("jms.activemq.port", Integer.class, DEFAULT_ACTIVEMQ_PORT);
         String host = env.getProperty("jms.activemq.host", String.class, DEFAULT_ACTIVEMQ_HOST);
         ActiveMQConnectionFactory rv = new ActiveMQConnectionFactory();
+        rv.setUserName(env.getRequiredProperty("jms.activemq.username"));
+        rv.setPassword(env.getRequiredProperty("jms.activemq.password"));
         rv.setBrokerURL(String.format("tcp://%s:%d", host, port));
         return rv;
     }
