@@ -23,12 +23,10 @@ implements ApplicationContextInitializer<GenericApplicationContext> {
         new EnvironmentExtender(env).extendEnvironmentWithAnnotatedProperties("me.gking2224");
         env.registerEnvironmentPropertiesAsBeans(applicationContext);
     }
-
     
     protected abstract String getServiceName();
     
     protected String getEnv() {
         return "ci";
     }
-
 }
