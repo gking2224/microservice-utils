@@ -1,5 +1,7 @@
 package me.gking2224.common.jmx;
 
+import javax.management.MBeanServer;
+
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -13,6 +15,7 @@ import org.springframework.jmx.export.assembler.MetadataMBeanInfoAssembler;
 import org.springframework.jmx.export.metadata.JmxAttributeSource;
 import org.springframework.jmx.export.naming.MetadataNamingStrategy;
 import org.springframework.jmx.export.naming.ObjectNamingStrategy;
+import org.springframework.jmx.support.MBeanServerFactoryBean;
 
 @Configuration
 @Profile("jmx")
@@ -28,13 +31,22 @@ public class CommonJmxConfiguration implements ApplicationContextAware {
     public CommonJmxConfiguration() {
         annotationJmxAttributeSource = new AnnotationJmxAttributeSource();
     }
-   
+
+    @Bean("mbeanServer")
+    MBeanServerFactoryBean getMbeanServer() {
+        MBeanServerFactoryBean mbsfb = new MBeanServerFactoryBean();
+        mbsfb.setLocateExistingServerIfPossible(true);
+        mbsfb.setRegisterWithFactory(true);
+        return mbsfb;
+    }
+    
     @Bean
-    MBeanExporter getMbeanExport() {
+    MBeanExporter getMbeanExport(final MBeanServer server) {
         MBeanExporter mbe = new MBeanExporter();
         mbe.setAssembler(getAssembler());
         mbe.setNamingStrategy(getNamingStrategy());
         mbe.setAutodetect(true);
+        mbe.setServer(server);
         return mbe;
     }
     
