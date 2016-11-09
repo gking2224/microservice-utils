@@ -1,18 +1,18 @@
 package me.gking2224.common.batch.step;
 
 import static java.lang.String.format;
-import static me.gking2224.common.utils.PropertyUtils.getBoolean;
-import static me.gking2224.common.utils.PropertyUtils.getInteger;
-import static me.gking2224.common.utils.PropertyUtils.getStringArray;
+import static me.gking2224.common.utils.PropertyResolverUtils.getBoolean;
+import static me.gking2224.common.utils.PropertyResolverUtils.getInteger;
+import static me.gking2224.common.utils.PropertyResolverUtils.getStringArray;
 
 import java.io.File;
-import java.util.Properties;
 
 import org.springframework.batch.core.step.FatalStepExecutionException;
 import org.springframework.batch.item.file.FlatFileItemReader;
 import org.springframework.batch.item.file.LineCallbackHandler;
 import org.springframework.batch.item.file.LineMapper;
 import org.springframework.batch.item.file.separator.RecordSeparatorPolicy;
+import org.springframework.core.env.PropertyResolver;
 import org.springframework.core.io.FileSystemResource;
 
 import me.gking2224.common.batch.generic.SkipBlanksRecordSeparatorPolicy;
@@ -23,7 +23,7 @@ public class FlatFileItemReaderBuilder<T> {
 
     private static final boolean DEFAULT_STRICT = false;
     
-    private Properties properties;
+    private PropertyResolver properties;
     private File file;
     private String name;
     private LineCallbackHandler handler;
@@ -32,7 +32,7 @@ public class FlatFileItemReaderBuilder<T> {
 
     private RecordSeparatorPolicy recordSeparatorPolicy = new SkipBlanksRecordSeparatorPolicy();
 
-    public FlatFileItemReaderBuilder(Properties properties) {
+    public FlatFileItemReaderBuilder(PropertyResolver properties) {
         this.properties = properties;
     }
 

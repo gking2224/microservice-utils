@@ -23,6 +23,8 @@ import org.springframework.batch.item.file.transform.DelimitedLineAggregator;
 import org.springframework.batch.item.file.transform.FieldExtractor;
 import org.springframework.batch.item.file.transform.LineAggregator;
 import org.springframework.context.annotation.Bean;
+import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.core.env.PropertyResolver;
 import org.springframework.core.io.FileSystemResource;
 
 import me.gking2224.common.batch.step.ListItemReader;
@@ -41,9 +43,19 @@ public class WriteRecordsStepBuilder<I, O> extends AbstractBatchEtlStepBuilder<W
     private Function<StepExecutionHolder, File> fileProvider;
     private Function<StepExecutionHolder, List<I>> itemsProvider;
 
-    public WriteRecordsStepBuilder(final StepBuilderFactory steps, final Properties parentProperties,
+    public WriteRecordsStepBuilder(
+            final StepBuilderFactory steps,
+            final ConfigurableEnvironment environment,
+            final Properties parentProperties,
             final String flowName, final String stepName) {
-        super(steps, parentProperties, flowName, stepName);
+        super(steps, environment, parentProperties, flowName, stepName);
+    }
+
+    public WriteRecordsStepBuilder(
+            final StepBuilderFactory steps,
+            final PropertyResolver properties,
+            final String flowName, final String stepName) {
+        super(steps, properties, flowName, stepName);
     }
 
     public WriteRecordsStepBuilder<I, O> fileProvider(final Function<StepExecutionHolder, File> fileProvider) {

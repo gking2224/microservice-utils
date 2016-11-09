@@ -8,6 +8,8 @@ import org.springframework.batch.core.StepExecution;
 import org.springframework.batch.core.StepExecutionListener;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
 import org.springframework.batch.core.step.builder.StepBuilder;
+import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.core.env.PropertyResolver;
 
 import me.gking2224.common.batch.FaultToleranceConfigurer;
 import me.gking2224.common.batch.SimpleFaultToleranceConfigurer;
@@ -22,11 +24,17 @@ implements StepExecutionListener {
 
     public AbstractBatchStepBuilder(
             final StepBuilderFactory steps,
+            final ConfigurableEnvironment environment,
             final Properties parentProperties,
             final String flowName, String stepName
     ) {
-        super(steps, parentProperties, flowName);
+        super(steps, environment, parentProperties, flowName);
         this.stepName = stepName;
+    }
+
+    public AbstractBatchStepBuilder(StepBuilderFactory steps, PropertyResolver properties, String flowName,
+            String stepName) {
+        super(steps, properties, flowName, stepName);
     }
 
     protected final FaultToleranceConfigurer getFaultToleranceConfigurer() {

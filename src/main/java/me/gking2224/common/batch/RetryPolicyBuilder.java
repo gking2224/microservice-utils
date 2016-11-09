@@ -2,7 +2,8 @@ package me.gking2224.common.batch;
 
 import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
-import static me.gking2224.common.utils.PropertyUtils.getString;
+import static me.gking2224.common.utils.PropertyResolverUtils.getInteger;
+import static me.gking2224.common.utils.PropertyResolverUtils.getString;
 import static org.springframework.util.StringUtils.commaDelimitedListToSet;
 
 import java.time.Duration;
@@ -18,11 +19,11 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Properties;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+import org.springframework.core.env.PropertyResolver;
 import org.springframework.retry.RetryPolicy;
 import org.springframework.retry.policy.AlwaysRetryPolicy;
 import org.springframework.retry.policy.CompositeRetryPolicy;
@@ -31,7 +32,6 @@ import org.springframework.retry.policy.SimpleRetryPolicy;
 import org.springframework.retry.policy.TimeoutRetryPolicy;
 
 import me.gking2224.common.utils.DurationFormatter;
-import me.gking2224.common.utils.PropertyUtils;
 
 public class RetryPolicyBuilder {
     
@@ -51,7 +51,7 @@ public class RetryPolicyBuilder {
     private static DateTimeFormatter timeFormat = DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT).withLocale(Locale.UK);
     
     private RetryPolicyType type;
-    private Properties properties;
+    private PropertyResolver properties;
 
     private Duration timeout;
 
@@ -64,7 +64,7 @@ public class RetryPolicyBuilder {
     public RetryPolicyBuilder() {
     }
     
-    public RetryPolicyBuilder properties(final Properties properties) {
+    public RetryPolicyBuilder properties(final PropertyResolver properties) {
         this.properties = properties;
         return this;
     }
@@ -76,7 +76,7 @@ public class RetryPolicyBuilder {
 
     public RetryPolicy build() {
 
-        if (type == null) type = RetryPolicyType.valueOf(PropertyUtils.getString(properties, "retryPolicy.type", RetryPolicyType.SIMPLE.toString()));
+        if (type == null) type = RetryPolicyType.valueOf(getString(properties, "retryPolicy.type", RetryPolicyType.SIMPLE.toString()));
         
         switch (type) {
         case NEVER:
@@ -102,7 +102,7 @@ public class RetryPolicyBuilder {
     }
     
     protected RetryPolicy timeout() {
-        if (this.timeout == null) timeout = df.apply(PropertyUtils.getString(properties, "retryPolicy.timeout", DEFAULT_TIMEOUT));
+        if (this.timeout == null) timeout = df.apply(getString(properties, "retryPolicy.timeout", DEFAULT_TIMEOUT));
         
         TimeoutRetryPolicy torp = new TimeoutRetryPolicy();
         torp.setTimeout(timeout.toMillis());
@@ -117,8 +117,8 @@ public class RetryPolicyBuilder {
     }
 
     protected RetryPolicy fixedTime() {
-        if (this.timezone == null) timezone = ZoneId.of(PropertyUtils.getString(properties, "retryPolicy.fixedTime.timezone", DEFAULT_ZONE_ID));
-        if (this.time == null) time = LocalTime.from(timeFormat.parse(PropertyUtils.getString(properties, "retryPolicy.fixedTime.time", DEFAULT_TIME)));
+        if (this.timezone == null) timezone = ZoneId.of(getString(properties, "retryPolicy.fixedTime.timezone", DEFAULT_ZONE_ID));
+        if (this.time == null) time = LocalTime.from(timeFormat.parse(getString(properties, "retryPolicy.fixedTime.time", DEFAULT_TIME)));
         
         final LocalDateTime time = LocalDateTime.of(LocalDate.now(), this.time);
         
@@ -126,7 +126,7 @@ public class RetryPolicyBuilder {
     }
     
     protected RetryPolicy simple() {
-        if (this.attempts == null) attempts = PropertyUtils.getInteger(properties, "retryPolicy.simple.attempts", DEFAULT_ATTEMPTS);
+        if (this.attempts == null) attempts = getInteger(properties, "retryPolicy.simple.attempts", DEFAULT_ATTEMPTS);
         Set<String> retryClasses = commaDelimitedListToSet(getString(properties, "retryPolicy.simple.retryOn", "java.lang.Throwable"));
         Set<String> doNotRetryClasses = commaDelimitedListToSet(getString(properties, "retryPolicy.simple.doNotRetryOn", ""));
         

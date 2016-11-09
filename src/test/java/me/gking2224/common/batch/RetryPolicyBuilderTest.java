@@ -1,5 +1,6 @@
 package me.gking2224.common.batch;
 
+import static me.gking2224.common.utils.PropertyResolverUtils.convertProperties;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -24,7 +25,8 @@ public class RetryPolicyBuilderTest {
         
         Properties batchProperties = new NestedProperties("batch", properties);
         
-        RetryPolicy iPolicy = new RetryPolicyBuilder().properties(batchProperties).build();
+        RetryPolicy iPolicy = new RetryPolicyBuilder().properties(
+                convertProperties("batchProperties", batchProperties)).build();
         assertNotNull(iPolicy);
         assertTrue(SimpleRetryPolicy.class.isAssignableFrom(iPolicy.getClass()));
         
@@ -39,7 +41,8 @@ public class RetryPolicyBuilderTest {
         
         Properties batchProperties = new NestedProperties("batch", properties);
         
-        RetryPolicy iPolicy = new RetryPolicyBuilder().properties(batchProperties).build();
+        RetryPolicy iPolicy = new RetryPolicyBuilder().properties(
+                convertProperties("batchProperties", batchProperties)).build();
         assertNotNull(iPolicy);
         assertTrue(AlwaysRetryPolicy.class.isAssignableFrom(iPolicy.getClass()));
     }
@@ -53,7 +56,8 @@ public class RetryPolicyBuilderTest {
         
         Properties batchProperties = new NestedProperties("batch", properties);
         
-        RetryPolicy iPolicy = new RetryPolicyBuilder().properties(batchProperties).build();
+        RetryPolicy iPolicy = new RetryPolicyBuilder().properties(
+                convertProperties("batchProperties", batchProperties)).build();
         assertNotNull(iPolicy);
     }
 

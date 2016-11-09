@@ -2,7 +2,8 @@ package me.gking2224.common.batch;
 
 import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
-import static me.gking2224.common.utils.PropertyUtils.getString;
+import static me.gking2224.common.utils.PropertyResolverUtils.getInteger;
+import static me.gking2224.common.utils.PropertyResolverUtils.getString;
 import static org.springframework.util.StringUtils.commaDelimitedListToSet;
 
 import java.util.AbstractMap;
@@ -10,7 +11,6 @@ import java.util.AbstractMap.SimpleEntry;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Properties;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -19,8 +19,8 @@ import org.springframework.batch.core.step.skip.AlwaysSkipItemSkipPolicy;
 import org.springframework.batch.core.step.skip.LimitCheckingItemSkipPolicy;
 import org.springframework.batch.core.step.skip.NeverSkipItemSkipPolicy;
 import org.springframework.batch.core.step.skip.SkipPolicy;
+import org.springframework.core.env.PropertyResolver;
 
-import me.gking2224.common.utils.PropertyUtils;
 
 public class SkipPolicyBuilder {
     
@@ -31,14 +31,14 @@ public class SkipPolicyBuilder {
     private static final Integer DEFAULT_LIMIT = 20;
 
     private SkipPolicyType type;
-    private Properties properties;
+    private PropertyResolver properties;
 
     private Integer limit;
     
     public SkipPolicyBuilder() {
     }
     
-    public SkipPolicyBuilder properties(final Properties properties) {
+    public SkipPolicyBuilder properties(final PropertyResolver properties) {
         this.properties = properties;
         return this;
     }
@@ -50,7 +50,7 @@ public class SkipPolicyBuilder {
 
     public SkipPolicy build() {
 
-        if (type == null) type = SkipPolicyType.valueOf(PropertyUtils.getString(properties, "skipPolicy.type", SkipPolicyType.LIMITED.toString()));
+        if (type == null) type = SkipPolicyType.valueOf(getString(properties, "skipPolicy.type", SkipPolicyType.LIMITED.toString()));
         
         switch (type) {
         case NEVER:
@@ -72,7 +72,7 @@ public class SkipPolicyBuilder {
     }
     
     protected SkipPolicy limited() {
-        if (this.limit == null) limit = PropertyUtils.getInteger(properties, "skipPolicy.limited.skipLimit", DEFAULT_LIMIT);
+        if (this.limit == null) limit = getInteger(properties, "skipPolicy.limited.skipLimit", DEFAULT_LIMIT);
 
         Set<String> skippableClasses = commaDelimitedListToSet(getString(properties, "skipPolicy.limited.skipOn", "java.lang.Throwable"));
         Set<String> nonSkippableClasses = commaDelimitedListToSet(getString(properties, "skipPolicy.limited.doNotSkipOn", ""));

@@ -4,7 +4,6 @@ import static java.lang.String.format;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.Properties;
 import java.util.function.Supplier;
 
 import org.slf4j.Logger;
@@ -13,6 +12,7 @@ import org.springframework.batch.core.StepContribution;
 import org.springframework.batch.core.scope.context.ChunkContext;
 import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.repeat.RepeatStatus;
+import org.springframework.core.env.PropertyResolver;
 import org.springframework.retry.RetryCallback;
 import org.springframework.retry.RetryContext;
 import org.springframework.retry.RetryPolicy;
@@ -32,7 +32,7 @@ public class CheckForFileTaskletBuilder extends AbstractTaskletBuilder<CheckForF
     private BackOffPolicy backOffPolicy = null;
     private RetryPolicy retryPolicy = null;
 
-    private Properties properties;
+    private PropertyResolver properties;
     
     public CheckForFileTaskletBuilder() {
     }
@@ -57,7 +57,7 @@ public class CheckForFileTaskletBuilder extends AbstractTaskletBuilder<CheckForF
         return this;
     }
     
-    public CheckForFileTaskletBuilder properties(final Properties properties) {
+    public CheckForFileTaskletBuilder properties(final PropertyResolver properties) {
         this.properties = properties;
         return this;
     }
@@ -96,11 +96,11 @@ public class CheckForFileTaskletBuilder extends AbstractTaskletBuilder<CheckForF
                 else return RepeatStatus.FINISHED;
             }
 
-            private BackOffPolicy backOffPolicy(Properties properties) {
+            private BackOffPolicy backOffPolicy(PropertyResolver properties) {
                 return new BackOffPolicyBuilder().properties(properties).build();
             }
 
-            private RetryPolicy retryPolicy(Properties properties) {
+            private RetryPolicy retryPolicy(PropertyResolver properties) {
                 return new RetryPolicyBuilder().properties(properties).build();
             }
         };

@@ -1,13 +1,14 @@
 package me.gking2224.common.batch;
 
-import java.util.Properties;
+import static me.gking2224.common.utils.PropertyResolverUtils.getDouble;
+import static me.gking2224.common.utils.PropertyResolverUtils.getString;
 
+import org.springframework.core.env.PropertyResolver;
 import org.springframework.retry.backoff.BackOffPolicy;
 import org.springframework.retry.backoff.ExponentialBackOffPolicy;
 import org.springframework.retry.backoff.ThreadWaitSleeper;
 
 import me.gking2224.common.utils.DurationFormatter;
-import me.gking2224.common.utils.PropertyUtils;
 
 public class BackOffPolicyBuilder {
     
@@ -17,26 +18,26 @@ public class BackOffPolicyBuilder {
     private Double multiplier;
     private String maxInterval;
 
-    private Properties properties;
+    private PropertyResolver properties;
     
     public BackOffPolicyBuilder() {
     }
     
-    public BackOffPolicyBuilder properties(Properties props) {
-        this.properties = props;
+    public BackOffPolicyBuilder properties(PropertyResolver properties) {
+        this.properties = properties;
         return this;
     }
 
     public BackOffPolicy build() {
 
         if (initialInterval == null)
-            initialInterval = PropertyUtils.getString(properties, "backOffPolicy.initialInterval", "2s");
+            initialInterval = getString(properties, "backOffPolicy.initialInterval", "2s");
         
         if (multiplier == null)
-            multiplier = PropertyUtils.getDouble(properties, "backOffPolicy.multiplier", 1.2d);
+            multiplier = getDouble(properties, "backOffPolicy.multiplier", 1.2d);
         
         if (maxInterval == null)
-            maxInterval = PropertyUtils.getString(properties, "backOffPolicy.maxInterval", "1h");
+            maxInterval = getString(properties, "backOffPolicy.maxInterval", "1h");
         
         
         ExponentialBackOffPolicy policy = new ExponentialBackOffPolicy();

@@ -29,6 +29,7 @@ import org.springframework.jmx.export.annotation.ManagedResource;
 import org.springframework.retry.backoff.BackOffPolicy;
 
 import me.gking2224.common.client.EnvironmentProperties;
+import me.gking2224.common.utils.PropertyResolverUtils;
 
 @EnvironmentProperties(value="props:/batch.properties", name="common-batch", prefix="batch")
 @Profile("batch")
@@ -80,7 +81,8 @@ public class CommonBatchConfiguration {
     @Bean("defaultBackOffPolicy")
     public BackOffPolicy defaultBackOffPolicy(@Qualifier("batchProperties") final Properties batchProperties) {
         
-        return new BackOffPolicyBuilder().properties(batchProperties).build();
+        return new BackOffPolicyBuilder().properties(
+                PropertyResolverUtils.convertProperties("batchProperties", batchProperties)).build();
     }
 
     @ManagedOperation(description="Run batch job")

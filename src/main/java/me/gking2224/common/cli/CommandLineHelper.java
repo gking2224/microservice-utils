@@ -21,7 +21,6 @@ public class CommandLineHelper {
     private static final Logger LOG = LoggerFactory.getLogger(CommandLineHelper.class);
     
     private static final String DEFAULT_ENV = "embedded";
-    private static final File DEFAULT_PROPS_DIR = new File(System.getProperty("user.home"), "properties");
 
     private static final String ENV = "e";
     private static final String APP = "a";

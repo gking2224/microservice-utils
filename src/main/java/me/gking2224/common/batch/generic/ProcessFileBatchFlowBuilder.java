@@ -29,6 +29,7 @@ import org.springframework.batch.core.job.flow.Flow;
 import org.springframework.batch.core.job.flow.FlowExecutionStatus;
 import org.springframework.batch.core.job.flow.JobExecutionDecider;
 import org.springframework.batch.item.file.transform.FieldExtractor;
+import org.springframework.core.env.ConfigurableEnvironment;
 
 import me.gking2224.common.batch.BatchConstants;
 
@@ -50,9 +51,15 @@ public class ProcessFileBatchFlowBuilder<L, E> extends AbstractBatchFlowBuilder 
     private Function<Object, String> writeToBadFileProcessorFunction;
     private Function<L, E> readFromFileProcessorFunction;
 
+    public ProcessFileBatchFlowBuilder(
+            final StepBuilderFactory steps, final ConfigurableEnvironment environment, final Properties parentProperties,
+            final String jobName) {
+        super(steps, environment, parentProperties, jobName);
+    }
+
     public ProcessFileBatchFlowBuilder(final StepBuilderFactory steps, final Properties parentProperties,
             final String jobName) {
-        super(steps, parentProperties, jobName);
+        this(steps, null, parentProperties, jobName);
     }
 
     public Flow build() {

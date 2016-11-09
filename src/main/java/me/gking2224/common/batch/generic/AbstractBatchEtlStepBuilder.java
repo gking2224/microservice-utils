@@ -19,6 +19,8 @@ import org.springframework.batch.core.step.builder.SimpleStepBuilder;
 import org.springframework.batch.item.ItemReader;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.batch.item.file.LineCallbackHandler;
+import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.core.env.PropertyResolver;
 import org.springframework.retry.RetryCallback;
 import org.springframework.retry.RetryContext;
 import org.springframework.retry.RetryListener;
@@ -34,13 +36,19 @@ implements ItemReadListener<I>, ItemWriteListener<O>, RetryListener, ItemProcess
     
     public AbstractBatchEtlStepBuilder(
             final StepBuilderFactory steps,
+            final ConfigurableEnvironment environment,
             final Properties parentProperties,
             final String jobName,
             final String stepName
     ) {
-        super(steps, parentProperties, jobName, stepName);
+        super(steps, environment, parentProperties, jobName, stepName);
     }
     
+    public AbstractBatchEtlStepBuilder(StepBuilderFactory steps, PropertyResolver properties, String flowName,
+            String stepName) {
+        super(steps, properties, flowName, stepName);
+    }
+
     public Step build() {
         
         return etlStepBuilder()

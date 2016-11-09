@@ -6,6 +6,7 @@ import java.util.Properties;
 import java.util.function.Function;
 
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
+import org.springframework.core.env.ConfigurableEnvironment;
 
 import me.gking2224.common.batch.BatchUtils;
 
@@ -14,13 +15,13 @@ public abstract class AbstractEtlBatchConfiguration<L, E> extends AbstractBatchC
     
     private static final String NULL = "<null>";
     
-
     protected final ProcessFileBatchFlowBuilder<L, E> fileProcessFlowBuilder(
             final StepBuilderFactory steps,
+            final ConfigurableEnvironment environment,
             final Properties batchProperties
     ) {
         return new ProcessFileBatchFlowBuilder<L, E>(
-                steps, batchProperties, getFlowName())
+                steps, environment, batchProperties, getFlowName())
             .writeFunction(writeFunction())
             .fieldNames(fieldNames())
             .fieldsMapper(fromFields())

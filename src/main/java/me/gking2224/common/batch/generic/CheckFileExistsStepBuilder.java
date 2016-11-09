@@ -9,6 +9,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
 import org.springframework.batch.core.step.tasklet.Tasklet;
+import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.core.env.PropertyResolver;
 
 import me.gking2224.common.batch.step.CheckForFileTaskletBuilder;
 
@@ -20,11 +22,16 @@ public class CheckFileExistsStepBuilder extends AbstractBatchStepBuilder<CheckFi
     
     public CheckFileExistsStepBuilder(
             final StepBuilderFactory steps,
+            final ConfigurableEnvironment environment,
             final Properties parentProperties,
             final String flowName,
             final String stepName
     ) {
-        super(steps, parentProperties, flowName, stepName);
+        super(steps, environment, parentProperties, flowName, stepName);
+    }
+
+    public CheckFileExistsStepBuilder(StepBuilderFactory steps, PropertyResolver properties, String flowName, String stepName) {
+        super(steps, properties, flowName, stepName);
     }
 
     public CheckFileExistsStepBuilder fileProvider(final Function<StepExecutionHolder, File> fileProvider) {

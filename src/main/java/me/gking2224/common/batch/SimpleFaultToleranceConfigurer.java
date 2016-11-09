@@ -1,24 +1,23 @@
 package me.gking2224.common.batch;
 
-import java.util.Properties;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.batch.core.step.builder.FaultTolerantStepBuilder;
 import org.springframework.batch.core.step.builder.SimpleStepBuilder;
 import org.springframework.batch.core.step.skip.SkipPolicy;
+import org.springframework.core.env.PropertyResolver;
 import org.springframework.retry.RetryPolicy;
 
 public class SimpleFaultToleranceConfigurer implements FaultToleranceConfigurer {
 
     private static Logger logger = LoggerFactory.getLogger(SimpleFaultToleranceConfigurer.class);
 
-    private Properties properties;
+    private PropertyResolver properties;
     
     private RetryPolicy retryPolicy;
     private SkipPolicy skipPolicy;
     
-    public SimpleFaultToleranceConfigurer(final Properties properties) {
+    public SimpleFaultToleranceConfigurer(final PropertyResolver properties) {
         this.properties = properties;
     }
     

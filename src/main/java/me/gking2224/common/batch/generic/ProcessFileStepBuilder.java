@@ -15,6 +15,8 @@ import org.springframework.batch.item.ItemStream;
 import org.springframework.batch.item.file.FlatFileItemReader;
 import org.springframework.batch.item.file.LineCallbackHandler;
 import org.springframework.batch.item.file.LineMapper;
+import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.core.env.PropertyResolver;
 import org.springframework.core.io.FileSystemResource;
 
 import me.gking2224.common.batch.step.FlatFileItemReaderBuilder;
@@ -29,11 +31,16 @@ extends AbstractBatchEtlStepBuilder<ProcessFileStepBuilder<I, O>, I, O> {
     
     public ProcessFileStepBuilder(
             final StepBuilderFactory steps,
+            final ConfigurableEnvironment environment,
             final Properties parentProperties,
             final String flowName,
             final String stepName
     ) {
-        super(steps, parentProperties, flowName, stepName);
+        super(steps, environment, parentProperties, flowName, stepName);
+    }
+
+    public ProcessFileStepBuilder(StepBuilderFactory steps, PropertyResolver properties, String flowName, String stepName) {
+        super(steps, properties, flowName, stepName);
     }
 
     private Function<O, Void> writeFunction;
