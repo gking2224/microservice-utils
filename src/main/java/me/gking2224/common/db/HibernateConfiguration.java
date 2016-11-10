@@ -19,6 +19,7 @@ import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 
 import me.gking2224.common.client.EnvironmentProperties;
 import me.gking2224.common.client.MicroServiceEnvironment;
+import me.gking2224.common.utils.PrefixedProperties;
 
 @Configuration
 @EnvironmentProperties(value="props:/hibernate.properties", prefix="hib", name="common-hibernate")
@@ -27,10 +28,11 @@ public class HibernateConfiguration {
     @Bean(name="hibernateProperties")
     @ConditionalOnMissingBean(name="hibernateProperties")
     public Properties getHibernateProperties(
-            @Qualifier("common-hibernate") Properties commonHibernateProperties,
+            @Qualifier("common-hibernate") PrefixedProperties commonHibernateProperties,
             MicroServiceEnvironment env
     ) throws IOException {
-        Properties hibProps = new Properties(commonHibernateProperties);
+        Properties hibProps = new Properties();
+        hibProps.putAll(commonHibernateProperties.unwrap());
         hibProps.put("connection.driver_class", env.getRequiredProperty(DRIVER_PROPERTY));
         hibProps.put("connection.url", env.getRequiredProperty(URL_PROPERTY));
         hibProps.put("connection.username", env.getRequiredProperty(USERNAME_PROPERTY));

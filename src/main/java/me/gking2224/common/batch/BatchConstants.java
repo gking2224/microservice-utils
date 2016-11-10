@@ -17,7 +17,7 @@ public interface BatchConstants {
     String BAD_SUFFIX = "BAD_SUFFIX";
     String PROCESSED_SUFFIX = "PROCESSED_SUFFIX";
     String SEMAPHORE_SUFFIX = "SEMAPHORE_SUFFIX";
-    String BATCH_FILES_LOCATION = "%s/batch/files/%s";
+    String BATCH_FILES_LOCATION = "%s/files";
     
     // STATUS STRINGS
     String COMPLETED = "COMPLETED";

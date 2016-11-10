@@ -35,6 +35,7 @@ implements StepExecutionListener {
     public AbstractBatchStepBuilder(StepBuilderFactory steps, PropertyResolver properties, String flowName,
             String stepName) {
         super(steps, properties, flowName, stepName);
+        this.stepName = stepName;
     }
 
     protected final FaultToleranceConfigurer getFaultToleranceConfigurer() {

@@ -17,6 +17,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import me.gking2224.common.client.EnvironmentProperties;
 import me.gking2224.common.client.MicroServiceEnvironment;
+import me.gking2224.common.utils.PrefixedProperties;
 
 @ComponentScan({"me.gking2224.common.db"})
 @Profile("!embedded")
@@ -31,13 +32,14 @@ public class CommonDatabaseConfiguration {
     public static final String PASSWORD_PROPERTY = "db.database.password";
     public static final String URL_PROPERTY = "db.database.url";
 
-    @Autowired @Qualifier("common-db") Properties dbProperties;
+    @Autowired @Qualifier("common-db") PrefixedProperties dbProperties;
     
     @Bean(name="dataSource")
     public DataSource getDataSource() {
         
         DriverManagerDataSource ds = new DriverManagerDataSource();
-        ds.setConnectionProperties(dbProperties);
+        Properties p = dbProperties.unwrap();
+        ds.setConnectionProperties(p);
         ds.setUsername(env.getProperty(USERNAME_PROPERTY));
         ds.setDriverClassName(env.getProperty(DRIVER_PROPERTY));
         ds.setUrl(env.getProperty(URL_PROPERTY));
