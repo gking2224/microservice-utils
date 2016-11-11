@@ -251,12 +251,18 @@ public abstract class AbstractDaoImpl<T extends AbstractEntity<K, ? extends Abst
     public T saveOrUpdate(final T t) {
         
         if (t.getId() == null) {
-            logger.debug("id is non-null, find existing");
+            logger.debug("id is null, find existing");
             T existing = findExisting(t);
-            logger.debug("got {}", existing);
             if (existing != null) {
+                logger.debug("got existing: {}; set id and update", existing);
                 t.setId(existing.getId());
             }
+            else {
+                logger.debug("no existing, save as new");
+            }
+        }
+        else {
+            logger.debug("id is non-null, updating");
         }
         T saved = save(t);
         return saved;
