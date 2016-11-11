@@ -32,15 +32,16 @@ public class TraceAspect {
     @Around("mainLayers()")
     public Object logBefore(ProceedingJoinPoint joinPoint) throws Throwable{
         Signature signature = joinPoint.getSignature();
-        logger.trace(String.format("--> %s", signature));
+        Object[] args = joinPoint.getArgs();
+        logger.trace(String.format("--> %s(%s)", signature.toShortString(), args));
         try {
             Object rv = joinPoint.proceed();
-            logger.trace(String.format("<-- %s - return %s", signature, rv));
+            logger.trace(String.format("<-- %s : %s", signature, rv));
             return rv;
         }
         catch (Throwable t) {
             Throwable rootCause = t.getCause() == null ? t : ExceptionUtils.getRootCause(t);
-            logger.trace(String.format("<!!-- %s - threw %s (root cause = %s)", signature, t, rootCause));
+            logger.trace(String.format("<!!-- %s(%s) - threw %s (root cause = %s)", signature.toShortString(), args, t, rootCause));
             throw t;
         }
     }
