@@ -33,7 +33,7 @@ public class CommonJpaConfiguration {
                 .build();
     }
     
-    @Bean
+    @Bean(name={"jpaTransactionManager", "transactionManager"})
     @Primary
     public PlatformTransactionManager getTransactionManager(
             EntityManagerFactory emf,
