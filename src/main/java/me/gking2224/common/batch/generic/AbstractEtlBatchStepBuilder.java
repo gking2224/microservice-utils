@@ -25,7 +25,7 @@ import org.springframework.retry.RetryCallback;
 import org.springframework.retry.RetryContext;
 import org.springframework.retry.RetryListener;
 
-public abstract class AbstractBatchEtlStepBuilder<T, I, O> extends AbstractBatchStepBuilder<T>
+public abstract class AbstractEtlBatchStepBuilder<T, I, O> extends AbstractBatchStepBuilder<T>
 implements ItemReadListener<I>, ItemWriteListener<O>, RetryListener, ItemProcessListener<I, O>, LineCallbackHandler, SkipListener<I, O>, ChunkListener {
 
     private int chunkSize = 5;
@@ -34,7 +34,7 @@ implements ItemReadListener<I>, ItemWriteListener<O>, RetryListener, ItemProcess
     @SuppressWarnings("unchecked")
     private Function<I, O> processorFunction = item -> (O)item;
     
-    public AbstractBatchEtlStepBuilder(
+    public AbstractEtlBatchStepBuilder(
             final StepBuilderFactory steps,
             final ConfigurableEnvironment environment,
             final Properties parentProperties,
@@ -44,7 +44,7 @@ implements ItemReadListener<I>, ItemWriteListener<O>, RetryListener, ItemProcess
         super(steps, environment, parentProperties, jobName, stepName);
     }
     
-    public AbstractBatchEtlStepBuilder(StepBuilderFactory steps, PropertyResolver properties, String flowName,
+    public AbstractEtlBatchStepBuilder(StepBuilderFactory steps, PropertyResolver properties, String flowName,
             String stepName) {
         super(steps, properties, flowName, stepName);
     }

@@ -35,7 +35,7 @@ import me.gking2224.common.batch.step.ListItemReader;
  *
  * @param <O>
  */
-public class WriteRecordsStepBuilder<I, O> extends AbstractBatchEtlStepBuilder<WriteRecordsStepBuilder<I, O>, I, O> {
+public class WriteRecordsStepBuilder<I, O> extends AbstractEtlBatchStepBuilder<WriteRecordsStepBuilder<I, O>, I, O> {
     
     private static Logger logger = LoggerFactory.getLogger(ProcessFileStepBuilder.class);
 

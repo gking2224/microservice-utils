@@ -29,7 +29,9 @@ import org.springframework.jdbc.core.SqlReturnUpdateCount;
 import org.springframework.jdbc.datasource.init.UncategorizedScriptException;
 import org.springframework.transaction.annotation.Transactional;
 
+import me.gking2224.common.client.AbstractEntityBean;
 import me.gking2224.common.db.dao.CrudDao;
+import me.gking2224.common.model.AbstractEntity;
 
 /**
  * Abstract DAO class providing convenience access to database functions
@@ -37,7 +39,7 @@ import me.gking2224.common.db.dao.CrudDao;
  *
  */
 @Transactional(readOnly=true)
-public abstract class AbstractDaoImpl<T, K extends Serializable> implements CrudDao<T, K> {
+public abstract class AbstractDaoImpl<T extends AbstractEntity<K, ? extends AbstractEntityBean>, K extends Serializable> implements CrudDao<T, K> {
 
     private EntityManager entityManager;
 
@@ -242,6 +244,24 @@ public abstract class AbstractDaoImpl<T, K extends Serializable> implements Crud
     public T save(T t) {
         T saved = getRepository().save(t);
         return saved;
+    }
+
+    @Override
+    @Transactional(readOnly=false)
+    public T saveOrUpdate(final T t) {
+        
+        if (t.getId() == null) {
+            T existing = findExisting(t);
+            if (existing != null) {
+                t.setId(existing.getId());
+            }
+        }
+        T saved = save(t);
+        return saved;
+    }
+
+    protected T findExisting(T t) {
+        return null;
     }
 
     @Override

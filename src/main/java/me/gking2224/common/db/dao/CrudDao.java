@@ -6,6 +6,8 @@ import java.util.List;
 public interface CrudDao<T, K extends Serializable> {
 
     T save(T t);
+    
+    T saveOrUpdate(T t);
 
     List<T> findAll();
 

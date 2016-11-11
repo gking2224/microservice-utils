@@ -23,7 +23,7 @@ import me.gking2224.common.batch.step.FlatFileItemReaderBuilder;
 import me.gking2224.common.batch.step.FunctionLineWriter;
 
 public class ProcessFileStepBuilder<I, O>
-extends AbstractBatchEtlStepBuilder<ProcessFileStepBuilder<I, O>, I, O> {
+extends AbstractEtlBatchStepBuilder<ProcessFileStepBuilder<I, O>, I, O> {
     
     private static Logger logger = LoggerFactory.getLogger(ProcessFileStepBuilder.class);
     
