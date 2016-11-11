@@ -19,24 +19,27 @@ import me.gking2224.common.client.EnvironmentProperties;
 import me.gking2224.common.client.MicroServiceEnvironment;
 import me.gking2224.common.utils.PrefixedProperties;
 
-@ComponentScan({"me.gking2224.common.db"})
+@ComponentScan({ "me.gking2224.common.db" })
 @Profile("!embedded")
 @Configuration
-@EnvironmentProperties(value="props:/db.properties", prefix="db", name="common-db")
+@EnvironmentProperties(value = "props:/db.properties", prefix = "db", name = "common-db")
 public class CommonDatabaseConfiguration {
-    
-    @Autowired MicroServiceEnvironment env;
+
+    @Autowired
+    MicroServiceEnvironment env;
 
     public static final String DRIVER_PROPERTY = "db.database.driver";
     public static final String USERNAME_PROPERTY = "db.database.username";
     public static final String PASSWORD_PROPERTY = "db.database.password";
     public static final String URL_PROPERTY = "db.database.url";
 
-    @Autowired @Qualifier("common-db") PrefixedProperties dbProperties;
-    
-    @Bean(name="dataSource")
+    @Autowired
+    @Qualifier("common-db")
+    PrefixedProperties dbProperties;
+
+    @Bean(name = "dataSource")
     public DataSource getDataSource() {
-        
+
         DriverManagerDataSource ds = new DriverManagerDataSource();
         Properties p = dbProperties.unwrap();
         ds.setConnectionProperties(p);
@@ -54,7 +57,8 @@ public class CommonDatabaseConfiguration {
     }
 
     @Bean
-    public TransactionTemplate getTransactionTemplate(PlatformTransactionManager ptm) {
+    public TransactionTemplate getTransactionTemplate(
+            PlatformTransactionManager ptm) {
         TransactionTemplate tt = new TransactionTemplate();
         tt.setTransactionManager(ptm);
         return tt;
