@@ -1,5 +1,6 @@
 package me.gking2224.common.aop;
 
+import org.apache.commons.lang.StringUtils;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.Signature;
 import org.aspectj.lang.annotation.Around;
@@ -33,7 +34,7 @@ public class TraceAspect {
     public Object logBefore(ProceedingJoinPoint joinPoint) throws Throwable{
         Signature signature = joinPoint.getSignature();
         Object[] args = joinPoint.getArgs();
-        logger.trace(String.format("--> %s(%s)", signature.toShortString(), args));
+        logger.trace(String.format("--> %s(%s)", signature.toShortString(), arrayToString(args)));
         try {
             Object rv = joinPoint.proceed();
             logger.trace(String.format("<-- %s : %s", signature, rv));
@@ -44,5 +45,8 @@ public class TraceAspect {
             logger.trace(String.format("<!!-- %s(%s) - threw %s (root cause = %s)", signature.toShortString(), args, t, rootCause));
             throw t;
         }
+    }
+    private String arrayToString(Object[] args) {
+        return StringUtils.join(args, ",");
     }
 }
