@@ -1,9 +1,7 @@
-package me.gking2224.common.web;
+package me.gking2224.common.client;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import me.gking2224.common.client.MicroServiceEnvironment;
 
 @Component
 public class DefaultWebConfigurationOptions implements WebConfigurationOptions {
