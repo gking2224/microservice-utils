@@ -8,6 +8,7 @@ public class DefaultWebConfigurationOptions implements WebConfigurationOptions {
     
     private static final String[] DEFAULT_CORS_ALLOWED_ORIGINS = new String[0];
     private static final String[] DEFAULT_CORS_ALLOWED_METHODS = new String[] {"GET", "OPTIONS"};
+    private static final String[] DEFAULT_CORS_ALLOWED_HEADERS = new String[] {"*"};
     
     @Autowired MicroServiceEnvironment env;
 
@@ -20,5 +21,9 @@ public class DefaultWebConfigurationOptions implements WebConfigurationOptions {
     public String[] getAllowedCorsMethods() {
         return env.getProperty("security.cors.allowedMethods", String[].class, DEFAULT_CORS_ALLOWED_METHODS);
     }
-    
+
+    @Override
+    public String[] getAllowedRequestHeaders() {
+        return env.getProperty("security.cors.allowedHeaders", String[].class, DEFAULT_CORS_ALLOWED_HEADERS);
+    }
 }
