@@ -20,7 +20,7 @@ public class DefaultWebConfigurationOptions implements WebConfigurationOptions {
 
     @Override
     public String[] getAllowedCorsMethods() {
-        return env.getProperty("security.cors.allowedOrigins", String[].class, DEFAULT_CORS_ALLOWED_METHODS);
+        return env.getProperty("security.cors.allowedMethods", String[].class, DEFAULT_CORS_ALLOWED_METHODS);
     }
     
 }

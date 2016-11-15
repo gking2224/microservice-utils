@@ -1,9 +1,6 @@
 package me.gking2224.common.web;
 
-import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -13,6 +10,9 @@ import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.ui.freemarker.FreeMarkerConfigurationFactoryBean;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.util.PathMatcher;
+import org.springframework.web.servlet.config.annotation.CorsRegistration;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer;
 import org.springframework.web.util.UrlPathHelper;
 
@@ -22,14 +22,13 @@ import me.gking2224.common.client.EnvironmentProperties;
 @ComponentScan("me.gking2224.common.web")
 @Profile("web")
 @EnvironmentProperties(value="props:/webapp.properties", name="common-webapp", prefix="web")
-public class CommonWebAppConfiguration implements ApplicationContextAware {
+public class CommonWebAppConfiguration extends WebMvcConfigurationSupport {
 
-    @SuppressWarnings("unused")
     @Autowired
     private WebConfigurationOptions options;
     
-    @SuppressWarnings("unused")
-    private ApplicationContext applicationContext;
+//    @SuppressWarnings("unused")
+//    private ApplicationContext applicationContext;
     
     @Bean
     public ApplicationListener<ContextRefreshedEvent> contextRefreshed() {
@@ -63,7 +62,10 @@ public class CommonWebAppConfiguration implements ApplicationContextAware {
     }
 
     @Override
-    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        this.applicationContext = applicationContext;
+    protected void addCorsMappings(CorsRegistry registry) {
+        CorsRegistration mapping = registry.addMapping("/**");
+        mapping.allowedMethods(options.getAllowedCorsMethods());
+        mapping.allowedOrigins(options.getAllowedCorsOrigins());
+        
     }
 }
