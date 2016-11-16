@@ -8,11 +8,19 @@ import org.springframework.web.client.RestTemplate;
 public abstract class AbstractServiceClient implements InitializingBean {
     
     private static final String DEFAULT_CONTEXT = "/";
+    private String protocol;
     private String host;
     private int port;
     private String context = DEFAULT_CONTEXT;
     private String baseUrl;
     private RestTemplate restTemplate;
+    
+    public String getProtocol() {
+        return protocol;
+    }
+    public void setProtocol(String protocol) {
+        this.protocol = protocol;
+    }
     
     public String getHost() {
         return host;
@@ -34,12 +42,13 @@ public abstract class AbstractServiceClient implements InitializingBean {
     }
 
     protected String getBaseUrl() {
+        Objects.requireNonNull(this.protocol);
         Objects.requireNonNull(this.host);
         Objects.requireNonNull(this.port);
         Objects.requireNonNull(this.context);
         
         if (baseUrl == null) {
-            baseUrl = String.format("http://%s:%d/%s", this.host, this.port, this.context);
+            baseUrl = String.format("%s://%s:%d/%s", this.protocol, this.host, this.port, this.context);
         }
         return baseUrl;
     }
